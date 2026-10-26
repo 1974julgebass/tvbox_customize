@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inicio para Android TV</title>
+<meta name="description" content="Una pantalla de inicio propia para cajas Android TV, sin anuncios ni recomendaciones de nadie. La hice para la Xiaomi Mi Box 4 del salón de casa porque la de Go">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<link rel="stylesheet" href="estilo/manual.css">
+</head>
+<body class="es-portada">
+<header class="cabecera" id="cabecera">
+  <a class="marca" href="index.html">Inicio <span>para Android TV</span></a>
+  <nav class="menu" aria-label="Manuales"><a href="manuales/01-instalacion.html">Instalación</a><a href="manuales/02-configuracion.html">Configuración</a><a href="manuales/03-uso.html">Uso</a></nav>
+</header>
+<main>
+  <section class="portada">
+    <h1 class="titular">Inicio para Android TV</h1>
+    <p class="entradilla">Una pantalla de inicio propia para cajas Android TV, sin anuncios ni recomendaciones de nadie. La hice para la Xiaomi Mi Box 4 del salón de casa porque la de Google se había convertido en un escaparate: banners de series que no veo, filas que no puedo quitar y mis apps escondidas debajo de todo.</p>
+    <figure class="figura figura-portada"><img src="manuales/capturas/inicio.png" alt="Pantalla de inicio" width="1920" height="1080" loading="lazy" decoding="async"><figcaption>Pantalla de inicio</figcaption></figure>
+  </section>
+  <div class="cuerpo">
+    
+    <article class="texto">
+
+<p>Lo que hace:</p>
+<ul>
+<li><strong>Tus apps, en tu orden</strong>, y nada más.</li>
+<li><strong>Lo que echan ahora</strong> en tus canales de televisión, con el logo de cada uno, y avisos para el programa que no te quieres perder.</li>
+<li><strong>Seguir viendo</strong>: lo último que viste en cada app, juntado en una sola fila.</li>
+<li><strong>El tiempo</strong> de tu ciudad, la salida y puesta del sol y la fase de la luna.</li>
+<li><strong>Un salvapantallas</strong> con la hora, el tiempo y tus canales.</li>
+<li><strong>El móvil como mando</strong>, sin instalar nada: escaneas un QR en la tele y listo.</li>
+<li><strong>Instalar apps</strong> desde un pendrive o enviándolas desde el móvil.</li>
+<li><strong>Temporizador</strong> de apagado y avisos automáticos cuando echen tu equipo o tu serie.</li>
+<li><strong>Un panel en el PC</strong> (opcional) para ver la pantalla de la tele, manejarla con el teclado e instalar o desactivar apps.</li>
+</ul>
+<p>La guía de televisión es de canales de España.</p>
+
+<section class="bloque" aria-labelledby="manuales"><h2 id="manuales">Manuales</h2>
+<p>Están también como página web, con el mismo diseño: <strong><a href="https://1974julgebass.github.io/tvbox_customize/" target="_blank" rel="noopener">1974julgebass.github.io/tvbox_customize</a></strong></p>
+<ol>
+<li><a href="manuales/01-instalacion.html">Instalación</a>: preparar la caja y el PC, instalar la app y darle los permisos.</li>
+<li><a href="manuales/02-configuracion.html">Configuración</a>: tus apps, la ciudad, los avisos, el móvil y el salvapantallas.</li>
+<li><a href="manuales/03-uso.html">Uso</a>: el día a día con el mando.</li>
+</ol>
+</section>
+<section class="bloque" aria-labelledby="descarga"><h2 id="descarga">Descarga</h2>
+<p>El APK listo para instalar está en <a href="https://github.com/1974julgebass/tvbox_customize/releases" target="_blank" rel="noopener">Releases</a>. Si prefieres compilarlo tú, el manual de instalación explica cómo.</p>
+</section>
+<section class="bloque" aria-labelledby="requisitos"><h2 id="requisitos">Requisitos</h2>
+<ul>
+<li>Caja o tele con Android TV 8 o posterior. Probado en una Xiaomi Mi Box 4 (Android TV 9).</li>
+<li>Un PC para la instalación. Después ya no hace falta: la caja funciona sola.</li>
+</ul>
+<p>No necesita root y todo se puede deshacer.</p>
+</section>
+<section class="bloque" aria-labelledby="que-hay-en-cada-carpeta"><h2 id="que-hay-en-cada-carpeta">Qué hay en cada carpeta</h2>
+<div class="tabla"><table>
+<thead>
+<tr>
+<th>Carpeta</th>
+<th>Qué es</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>launcher/</code></td>
+<td>La interfaz de la pantalla de inicio, el salvapantallas y el mando del móvil (HTML, CSS y JavaScript). Se puede abrir en el navegador del PC con datos de muestra: las flechas hacen de mando.</td>
+</tr>
+<tr>
+<td><code>android/</code></td>
+<td>La app Android que la envuelve: pantalla de inicio, permisos, guía, avisos, salvapantallas y el servidor del mando del móvil.</td>
+</tr>
+<tr>
+<td><code>index.php</code>, <code>api/</code>, <code>includes/</code>, <code>css/</code>, <code>js/</code></td>
+<td>El panel opcional para el PC (PHP 8 y ADB).</td>
+</tr>
+<tr>
+<td><code>docs/</code></td>
+<td>Los manuales, en Markdown y en HTML.</td>
+</tr>
+<tr>
+<td><code>herramientas/</code></td>
+<td>El script que genera las páginas HTML de los manuales.</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="bloque" aria-labelledby="licencia"><h2 id="licencia">Licencia</h2>
+<p><a href="https://github.com/1974julgebass/tvbox_customize/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a>. Úsalo, cámbialo y compártelo como quieras; solo mantén el aviso de la licencia.</p>
+</section>
+<section class="bloque" aria-labelledby="creditos"><h2 id="creditos">Créditos</h2>
+<ul>
+<li>Guía de televisión y logos de canales: <a href="https://github.com/davidmuma/EPG_dobleM" target="_blank" rel="noopener">EPG_dobleM</a>. La app los descarga de su repositorio; no van incluidos aquí.</li>
+<li>Tiempo y búsqueda de ciudades: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>.</li>
+<li>Generador de códigos QR: <a href="https://github.com/kazuhikoarase/qrcode-generator" target="_blank" rel="noopener">qrcode-generator</a>, de Kazuhiko Arase (MIT).</li>
+<li>Cálculos de la luna: basados en <a href="https://github.com/mourner/suncalc" target="_blank" rel="noopener">SunCalc</a>, de Vladimir Agafonkin (BSD-2).</li>
+<li>Cliente ADB de la app: <a href="https://github.com/mobile-dev-inc/dadb" target="_blank" rel="noopener">dadb</a>, de mobile.dev (Apache 2.0).</li>
+<li>Tipografía: <a href="https://github.com/ateliertriay/bricolage" target="_blank" rel="noopener">Bricolage Grotesque</a> (SIL Open Font License 1.1).</li>
+</ul></section>
+    </article>
+  </div>
+  <nav class="paso" aria-label="Siguiente manual"><span></span><a class="paso-sig" href="manuales/01-instalacion.html"><small>Siguiente</small>Instalación</a></nav>
+</main>
+<footer class="pie"><p>Inicio para Android TV · <a href="index.html">Portada</a></p></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
+<script src="estilo/manual.js"></script>
+</body>
+</html>

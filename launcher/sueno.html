@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<title>Salvapantallas</title>
+<link rel="stylesheet" href="css/home.css">
+<link rel="stylesheet" href="css/tema-liquido.css">
+<style>
+  body { cursor: none; }
+  /* Fondo: los mismos tonos de la pantalla de inicio, quietos y más apagados (horas encendido sin marcar). */
+  .sueno-fondo { position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(1100px 760px at 8% -10%, rgba(64, 96, 220, .32), transparent 70%),
+      radial-gradient(900px 700px at 105% 20%, rgba(123, 92, 255, .22), transparent 70%),
+      radial-gradient(900px 600px at 50% 120%, rgba(0, 150, 220, .16), transparent 70%); }
+  /* Todo el conjunto se desplaza unos píxeles cada minuto para no marcar la pantalla. */
+  .sueno { position: absolute; inset: 0; padding: 96px 110px; display: grid; grid-template-columns: 1fr 700px; gap: 56px;
+    transition: transform 6s ease-in-out, opacity 1.2s; opacity: 0; }
+  .sueno.ver { opacity: 1; }
+  .izq { display: flex; flex-direction: column; min-width: 0; }
+  .reloj { display: flex; align-items: baseline; gap: 14px; line-height: .85; }
+  .reloj .hm { font-size: 250px; font-weight: 800; letter-spacing: -.055em; }
+  .reloj .ss { font-size: 84px; font-weight: 600; letter-spacing: -.03em; color: var(--texto-3); min-width: 110px; }
+  .s-fecha { font-size: 38px; color: var(--texto-2); margin-top: 24px; }
+  .s-fecha::first-letter { text-transform: uppercase; }
+  .s-tiempo { margin-top: auto; padding: 30px 34px; display: flex; align-items: center; gap: 26px; }
+  .s-tiempo .icono { width: 74px; height: 74px; stroke-width: 1.5; flex: none; }
+  .s-tiempo .temp { font-size: 72px; font-weight: 800; letter-spacing: -.04em; line-height: 1; }
+  .s-tiempo .lugar { font-size: 24px; color: var(--texto-2); margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .s-horas { list-style: none; display: flex; gap: 26px; margin-left: auto; }
+  .s-horas li { text-align: center; }
+  .s-horas .h { font-size: 20px; color: var(--texto-3); }
+  .s-horas svg { width: 32px; height: 32px; margin: 4px auto 2px; display: block; }
+  .s-horas .t { font-size: 26px; font-weight: 600; }
+  .der { display: flex; flex-direction: column; gap: 28px; min-width: 0; }
+  .der .cristal { padding: 28px 32px; }
+  .s-titulo { font-size: 22px; font-weight: 600; color: var(--texto-3); margin-bottom: 16px; }
+  .s-canales { list-style: none; display: flex; flex-direction: column; gap: 20px; }
+  .s-canales li { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-items: center; gap: 20px; }
+  .s-canales img { height: 38px; max-width: 96px; object-fit: contain; object-position: left center; }
+  .s-canales .nom { font-size: 22px; font-weight: 600; color: var(--texto-2); }
+  .s-canales p { font-size: 28px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .s-canales .barra { margin-top: 8px; }
+  .s-lista { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+  .s-lista li { display: flex; align-items: baseline; gap: 16px; font-size: 26px; min-width: 0; }
+  .s-lista b { font-weight: 800; flex: none; }
+  .s-lista span { color: var(--texto-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .s-sol { display: flex; gap: 40px; }
+  .s-sol p { display: flex; align-items: center; gap: 12px; font-size: 36px; font-weight: 800; letter-spacing: -.02em; }
+  .s-sol svg { width: 34px; height: 34px; color: var(--texto-3); }
+  .s-sol + .s-sol { margin-top: 14px; }
+  .s-sol p:first-child svg { color: var(--ambar); }
+  .s-luna .disco { stroke: none; width: 34px; height: 34px; }
+  .s-fase { font-size: 24px; color: var(--texto-2); margin-top: 12px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-sol" viewBox="0 0 32 32"><circle cx="16" cy="16" r="6"/><path d="M16 3v4M16 25v4M3 16h4M25 16h4M6.8 6.8l2.8 2.8M22.4 22.4l2.8 2.8M6.8 25.2l2.8-2.8M22.4 9.6l2.8-2.8"/></symbol>
+    <symbol id="i-luna" viewBox="0 0 32 32"><path d="M21.5 22.5A9.5 9.5 0 0 1 13 7.2a9.5 9.5 0 1 0 12.3 12.6 9.4 9.4 0 0 1-3.8 2.7Z"/></symbol>
+    <symbol id="i-sol-nube" viewBox="0 0 32 32"><path d="M12 5v2.5M5 12h2.5M7 7l1.8 1.8M17 7l-1.8 1.8"/><path d="M8.6 15.4A4.5 4.5 0 1 1 16.4 10"/><path d="M11 26h13a5 5 0 0 0 .6-10 7 7 0 0 0-13.2 1.6A4.2 4.2 0 0 0 11 26Z"/></symbol>
+    <symbol id="i-luna-nube" viewBox="0 0 32 32"><path d="M15.5 9.4A5.5 5.5 0 0 1 9 4.5a6 6 0 0 0 .4 11.2"/><path d="M11 26h13a5 5 0 0 0 .6-10 7 7 0 0 0-13.2 1.6A4.2 4.2 0 0 0 11 26Z"/></symbol>
+    <symbol id="i-nube" viewBox="0 0 32 32"><path d="M9 24h15a5.5 5.5 0 0 0 .7-11 8 8 0 0 0-15.1 1.8A4.6 4.6 0 0 0 9 24Z"/></symbol>
+    <symbol id="i-niebla" viewBox="0 0 32 32"><path d="M9 17h15a5 5 0 0 0 .6-10 7.5 7.5 0 0 0-14.2 1.6A4.2 4.2 0 0 0 9 17Z"/><path d="M5 22h18M9 27h18"/></symbol>
+    <symbol id="i-llovizna" viewBox="0 0 32 32"><path d="M9 19h15a5 5 0 0 0 .6-10 7.5 7.5 0 0 0-14.2 1.6A4.2 4.2 0 0 0 9 19Z"/><path d="M11 23v1.5M16 25v1.5M21 23v1.5"/></symbol>
+    <symbol id="i-lluvia" viewBox="0 0 32 32"><path d="M9 18h15a5 5 0 0 0 .6-10 7.5 7.5 0 0 0-14.2 1.6A4.2 4.2 0 0 0 9 18Z"/><path d="M11 22l-1.5 4M16.5 22 15 26M22 22l-1.5 4"/></symbol>
+    <symbol id="i-nieve" viewBox="0 0 32 32"><path d="M9 18h15a5 5 0 0 0 .6-10 7.5 7.5 0 0 0-14.2 1.6A4.2 4.2 0 0 0 9 18Z"/><path d="M11 22.5h.01M16 25.5h.01M21 22.5h.01M13.5 28h.01M18.5 28h.01" stroke-width="3"/></symbol>
+    <symbol id="i-tormenta" viewBox="0 0 32 32"><path d="M9 18h15a5 5 0 0 0 .6-10 7.5 7.5 0 0 0-14.2 1.6A4.2 4.2 0 0 0 9 18Z"/><path d="m17 20-3.5 5h4l-2.5 4.5"/></symbol>
+    <symbol id="i-sube" viewBox="0 0 32 32"><path d="M16 25V8M9 15l7-7 7 7"/></symbol>
+    <symbol id="i-baja" viewBox="0 0 32 32"><path d="M16 7v17M9 17l7 7 7-7"/></symbol>
+    <symbol id="i-amanece" viewBox="0 0 32 32"><path d="M8 22a8 8 0 0 1 16 0M4 26h24M16 5v6M12.5 8.5 16 5l3.5 3.5"/></symbol>
+    <symbol id="i-anochece" viewBox="0 0 32 32"><path d="M8 22a8 8 0 0 1 16 0M4 26h24M16 5v6M12.5 7.5 16 11l3.5-3.5"/></symbol>
+  </defs>
+</svg>
+
+<div class="stage" id="stage">
+  <div class="sueno-fondo" aria-hidden="true"></div>
+  <div class="sueno" id="sueno">
+    <section class="izq">
+      <p class="reloj"><span class="hm" id="hm">--:--</span><span class="ss" id="ss">00</span></p>
+      <p class="s-fecha" id="fecha"></p>
+      <div class="s-tiempo cristal" id="tiempo" hidden>
+        <svg class="icono"><use id="t-icono" href="#i-nube"/></svg>
+        <div>
+          <p class="temp" id="t-temp"></p>
+          <p class="lugar" id="t-lugar"></p>
+        </div>
+        <ol class="s-horas" id="t-horas"></ol>
+      </div>
+    </section>
+    <section class="der">
+      <div class="cristal" id="caja-canales" hidden>
+        <h2 class="s-titulo">Ahora en tus canales</h2>
+        <ul class="s-canales" id="canales"></ul>
+      </div>
+      <div class="cristal" id="caja-avisos" hidden>
+        <h2 class="s-titulo">Te aviso</h2>
+        <ul class="s-lista" id="avisos"></ul>
+      </div>
+      <div class="cristal" id="caja-sol">
+        <h2 class="s-titulo">Sol y luna</h2>
+        <div class="s-sol" id="fila-sol" hidden>
+          <p><svg><use href="#i-sol"/></svg></p>
+          <p><svg><use href="#i-amanece"/></svg><span id="sale"></span></p>
+          <p><svg><use href="#i-anochece"/></svg><span id="pone"></span></p>
+        </div>
+        <div class="s-sol s-luna">
+          <p><svg class="disco" viewBox="0 0 32 32"><circle cx="16" cy="16" r="11" class="luna-fondo"/><path id="luna-luz" class="luna-luz" d=""/></svg></p>
+          <p><svg><use href="#i-sube"/></svg><span id="l-sale">--:--</span></p>
+          <p><svg><use href="#i-baja"/></svg><span id="l-pone">--:--</span></p>
+        </div>
+        <p class="s-fase" id="fase"></p>
+      </div>
+    </section>
+  </div>
+</div>
+<script src="js/puente.js"></script>
+<script src="js/luna.js"></script>
+<script src="js/sueno.js"></script>
+</body>
+</html>

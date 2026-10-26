@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instalación · Inicio para Android TV</title>
+<meta name="description" content="Esta guía te lleva desde una caja Android TV recién sacada de la caja hasta tener la pantalla de inicio funcionando. Yo la monté en una Xiaomi Mi Box 4 (Android">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<link rel="stylesheet" href="../estilo/manual.css">
+</head>
+<body class="es-manual">
+<header class="cabecera" id="cabecera">
+  <a class="marca" href="../index.html">Inicio <span>para Android TV</span></a>
+  <nav class="menu" aria-label="Manuales"><a href="../manuales/01-instalacion.html" aria-current="page">Instalación</a><a href="../manuales/02-configuracion.html">Configuración</a><a href="../manuales/03-uso.html">Uso</a></nav>
+</header>
+<main>
+  <section class="portada">
+    <h1 class="titular">Instalación</h1>
+    <p class="entradilla">Esta guía te lleva desde una caja Android TV recién sacada de la caja hasta tener la pantalla de inicio funcionando. Yo la monté en una Xiaomi Mi Box 4 (Android TV 9), así que los nombres de los menús son los de esa caja. En otras marcas cambian un poco, pero los pasos son los mismos.</p>
+    
+  </section>
+  <div class="cuerpo">
+    <aside class="indice" aria-label="En esta página"><p>En esta página</p><ol><li><a href="#que-necesitas">Qué necesitas</a></li><li><a href="#1-activa-las-opciones-de-desarrollador-en-la-caja">1. Activa las opciones de desarrollador en la caja</a></li><li><a href="#2-instala-adb-en-el-pc">2. Instala ADB en el PC</a></li><li><a href="#3-conecta-el-pc-con-la-caja">3. Conecta el PC con la caja</a></li><li><a href="#4-consigue-el-apk">4. Consigue el APK</a></li><li><a href="#5-instala-la-app-en-la-caja">5. Instala la app en la caja</a></li><li><a href="#6-hazla-tu-pantalla-de-inicio">6. Hazla tu pantalla de inicio</a></li><li><a href="#7-dale-los-permisos">7. Dale los permisos</a></li><li><a href="#8-pruebala">8. Pruébala</a></li><li><a href="#el-panel-del-pc-opcional">El panel del PC (opcional)</a></li><li><a href="#si-algo-no-va">Si algo no va</a></li><li><a href="#volver-a-como-estaba">Volver a como estaba</a></li></ol></aside>
+    <article class="texto">
+<p>Calcula una hora la primera vez. La mayor parte se va en instalar las herramientas en el PC; la caja se prepara en diez minutos.</p>
+<figure class="figura"><img src="capturas/inicio.png" alt="La pantalla de inicio en marcha" width="1920" height="1080" loading="lazy" decoding="async"><figcaption>La pantalla de inicio en marcha</figcaption></figure>
+
+<section class="bloque" aria-labelledby="que-necesitas"><h2 id="que-necesitas">Qué necesitas</h2>
+<ul>
+<li>Una caja o tele con <strong>Android TV 8 o posterior</strong>.</li>
+<li>Un <strong>PC con Windows</strong> en la misma wifi que la caja. Los comandos son de Windows; en Linux o Mac funcionan igual cambiando las rutas.</li>
+<li>El <strong>mando</strong> de la caja.</li>
+<li>Solo si tu caja no deja conectarse por red a la primera: un <strong>cable USB macho-macho</strong> (tipo A en los dos extremos). En la Mi Box 4 me hizo falta.</li>
+</ul>
+<p>No hace falta root ni desbloquear nada. Todo lo que cambias se deshace en un minuto (lo explico al final).</p>
+</section>
+<section class="bloque" aria-labelledby="1-activa-las-opciones-de-desarrollador-en-la-caja"><h2 id="1-activa-las-opciones-de-desarrollador-en-la-caja">1. Activa las opciones de desarrollador en la caja</h2>
+<ol>
+<li>En la caja, entra en <strong>Ajustes → Preferencias del dispositivo → Información</strong>.</li>
+<li>Baja hasta <strong>Compilación</strong> y pulsa OK siete veces seguidas. Verás un aviso: «Ahora eres desarrollador».</li>
+<li>Vuelve atrás. Ahora aparece <strong>Opciones para desarrolladores</strong> dentro de Preferencias del dispositivo.</li>
+<li>Entra y activa <strong>Depuración USB</strong>.</li>
+</ol>
+<p>Apunta la IP de la caja: está en <strong>Ajustes → Red e Internet</strong>, pulsando sobre tu wifi. Algo como <code>192.168.1.40</code>. Te recomiendo reservarla en el router para que no cambie; en casi todos los routers está en el apartado DHCP, asociando la IP a la MAC de la caja.</p>
+</section>
+<section class="bloque" aria-labelledby="2-instala-adb-en-el-pc"><h2 id="2-instala-adb-en-el-pc">2. Instala ADB en el PC</h2>
+<p>ADB es la herramienta oficial de Android para hablar con el aparato desde el ordenador. Abre una terminal (PowerShell) y escribe:</p>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">winget install Google.PlatformTools
+</code></pre></div>
+<p>Cierra la terminal y abre otra. Comprueba que responde:</p>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">adb version
+</code></pre></div>
+<p>Si dice que no encuentra <code>adb</code>, búscalo en <code>%LOCALAPPDATA%\Microsoft\WinGet\Packages\</code> (carpeta que empieza por <code>Google.PlatformTools</code>) y usa la ruta completa, o añade esa carpeta al PATH.</p>
+</section>
+<section class="bloque" aria-labelledby="3-conecta-el-pc-con-la-caja"><h2 id="3-conecta-el-pc-con-la-caja">3. Conecta el PC con la caja</h2>
+<p>Prueba primero por red, con la IP que apuntaste:</p>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">adb connect 192.168.1.40:5555
+</code></pre></div>
+<p>La tele te preguntará <strong>«¿Permitir la depuración USB?»</strong>. Marca <em>Permitir siempre desde este ordenador</em> y acepta.</p>
+<p><strong>Si sale «connection refused»</strong> (me pasó con la Mi Box 4), la caja todavía no escucha por red. Hay que abrirle la puerta una vez por cable:</p>
+<ol>
+<li>Conecta la caja al PC con el cable USB macho-macho.</li>
+<li><code>adb devices</code> y acepta el aviso en la tele.</li>
+<li><code>adb tcpip 5555</code></li>
+<li>Quita el cable y repite el <code>adb connect</code> de arriba.</li>
+</ol>
+<p>En mi caja el puerto siguió abierto después de reiniciarla, así que el cable solo hizo falta esa vez.</p>
+<p>Comprueba que todo va bien:</p>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">adb devices
+</code></pre></div>
+<p>Tiene que aparecer la IP de la caja con la palabra <code>device</code> al lado.</p>
+</section>
+<section class="bloque" aria-labelledby="4-consigue-el-apk"><h2 id="4-consigue-el-apk">4. Consigue el APK</h2>
+<p><strong>La forma fácil:</strong> descarga <code>tvbox_customize.apk</code> de la <a href="https://github.com/1974julgebass/tvbox_customize/releases" target="_blank" rel="noopener">página de versiones</a> del repositorio y salta al paso 5.</p>
+<p><strong>Si prefieres compilarlo tú</strong>, primero bájate el proyecto. Con Git:</p>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">git clone https://github.com/1974julgebass/tvbox_customize.git
+</code></pre></div>
+<p>O desde la página del repositorio, con <strong>Code → Download ZIP</strong>.</p>
+<p>Para compilar necesitas tres cosas:</p>
+<div class="tabla"><table>
+<thead>
+<tr>
+<th>Herramienta</th>
+<th>Cómo instalarla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java 17</td>
+<td><code>winget install EclipseAdoptium.Temurin.17.JDK</code></td>
+</tr>
+<tr>
+<td>Android SDK (solo las herramientas de línea de comandos)</td>
+<td>Descarga <em>Command line tools only</em> de developer.android.com/studio, descomprímelas en <code>C:\Android\sdk\cmdline-tools\latest</code> y ejecuta <code>C:\Android\sdk\cmdline-tools\latest\bin\sdkmanager "platforms;android-34" "build-tools;34.0.0"</code></td>
+</tr>
+<tr>
+<td>Gradle 8.9</td>
+<td>Descarga el zip de gradle.org/releases y descomprímelo en <code>C:\Android\gradle-8.9</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>No necesitas Android Studio. Acepta las licencias del SDK una vez (responde <code>y</code> a todo):</p>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">C:\Android\sdk\cmdline-tools\latest\bin\sdkmanager --licenses
+</code></pre></div>
+<p>Si Gradle se queja de que no encuentra Java, crea la variable de entorno <code>JAVA_HOME</code> apuntando a la carpeta del JDK (algo como <code>C:\Program Files\Eclipse Adoptium\jdk-17...</code>) y abre otra terminal.</p>
+<p>Crea el archivo <code>android\local.properties</code> con la ruta del SDK (fíjate en las barras dobles):</p>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-properties">sdk.dir=C\:\\Android\\sdk
+</code></pre></div>
+<p>Y compila desde la carpeta del proyecto:</p>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">C:\Android\gradle-8.9\bin\gradle.bat -p android assembleDebug
+</code></pre></div>
+<p>La primera vez tarda unos minutos porque descarga dependencias. El APK queda en <code>android\app\build\outputs\apk\debug\app-debug.apk</code>.</p>
+<p>La interfaz de la pantalla de inicio está en la carpeta <code>launcher/</code> (HTML, CSS y JavaScript). Cada vez que compilas, se copia dentro del APK. Si cambias algo ahí, vuelve a compilar e instalar.</p>
+</section>
+<section class="bloque" aria-labelledby="5-instala-la-app-en-la-caja"><h2 id="5-instala-la-app-en-la-caja">5. Instala la app en la caja</h2>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">adb install -r tvbox_customize.apk
+</code></pre></div>
+<p>(O <code>app-debug.apk</code>, si lo compilaste tú.)</p>
+<p>Debe responder <code>Success</code>. Si actualizas más adelante, el mismo comando sirve: conserva tus favoritas, avisos y móviles emparejados.</p>
+</section>
+<section class="bloque" aria-labelledby="6-hazla-tu-pantalla-de-inicio"><h2 id="6-hazla-tu-pantalla-de-inicio">6. Hazla tu pantalla de inicio</h2>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">adb shell cmd package set-home-activity es.casa.inicio/.MainActivity
+adb shell pm disable-user --user 0 com.google.android.tvlauncher
+</code></pre></div>
+<p>El segundo comando desactiva el inicio de Google. Sin él, el botón Inicio del mando sigue llevándote al de Google aunque hayas elegido otro. No se borra nada: se queda dormido y lo recuperas cuando quieras.</p>
+<p>Si tu caja no es de Google TV clásico y el inicio se llama distinto, averigua cuál es con:</p>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">adb shell cmd package resolve-activity -a android.intent.action.MAIN -c android.intent.category.HOME
+</code></pre></div>
+</section>
+<section class="bloque" aria-labelledby="7-dale-los-permisos"><h2 id="7-dale-los-permisos">7. Dale los permisos</h2>
+<p>Android no deja que una app normal se dé estos permisos a sí misma, pero tú sí puedes dárselos por ADB. Copia el bloque entero:</p>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">adb shell appops set es.casa.inicio GET_USAGE_STATS allow
+adb shell cmd notification allow_listener es.casa.inicio/es.casa.inicio.Escucha
+adb shell appops set es.casa.inicio SYSTEM_ALERT_WINDOW allow
+adb shell settings put secure enabled_accessibility_services es.casa.inicio/es.casa.inicio.Accion
+adb shell settings put secure accessibility_enabled 1
+adb shell settings put secure screensaver_components es.casa.inicio/es.casa.inicio.Sueno
+</code></pre></div>
+<p>Para qué sirve cada uno:</p>
+<div class="tabla"><table>
+<thead>
+<tr>
+<th>Permiso</th>
+<th>Para qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Uso de apps</td>
+<td>Saber qué app usaste por última vez y abrir la pantalla ahí.</td>
+</tr>
+<tr>
+<td>Notificaciones</td>
+<td>Apuntar lo que estás viendo en cada app («Seguir viendo»). Solo lee el título de lo que suena; no guarda nada fuera de la caja.</td>
+</tr>
+<tr>
+<td>Mostrar encima</td>
+<td>Los avisos flotantes: un programa que empieza, el temporizador, una app instalada desde el móvil.</td>
+</tr>
+<tr>
+<td>Accesibilidad</td>
+<td>Los botones de Reiniciar y Apagar de los ajustes. No lee la pantalla.</td>
+</tr>
+<tr>
+<td>Salvapantallas</td>
+<td>Usar el salvapantallas propio, con la hora y tus canales.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Antes de cambiar el salvapantallas, si quieres poder volver al de antes, apunta cuál tienes:</p>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">adb shell settings get secure screensaver_components
+</code></pre></div>
+</section>
+<section class="bloque" aria-labelledby="8-pruebala"><h2 id="8-pruebala">8. Pruébala</h2>
+<p>Pulsa el botón <strong>Inicio</strong> del mando. Tiene que aparecer la pantalla nueva. Si ves la de Google, revisa el paso 6.</p>
+<p>La primera vez que uses el mando desde el móvil (o instales una app), la tele preguntará otra vez <strong>«¿Permitir la depuración USB?»</strong>: es la propia caja pidiéndose permiso a sí misma. Marca <em>Permitir siempre</em> y acepta. Lo cuento con calma en el manual de configuración.</p>
+</section>
+<section class="bloque" aria-labelledby="el-panel-del-pc-opcional"><h2 id="el-panel-del-pc-opcional">El panel del PC (opcional)</h2>
+<p>El proyecto trae también un panel web para manejar la caja desde el ordenador: ver la pantalla, usar el teclado como mando, instalar o desactivar apps, cambiar ajustes y ver el estado.</p>
+<figure class="figura"><img src="capturas/panel.png" alt="Panel del PC" width="1440" height="900" loading="lazy" decoding="async"><figcaption>Panel del PC</figcaption></figure>
+<p>Para usarlo necesitas un servidor con PHP 8 en el mismo PC; yo uso XAMPP.</p>
+<ol>
+<li>Copia la carpeta del proyecto dentro de <code>C:\xampp\htdocs\</code>, por ejemplo como <code>tvbox</code>. Vale cualquier carpeta.</li>
+<li>Copia <code>.env.example</code> a <code>.env</code> y rellena la IP de la caja y la ruta completa de <code>adb.exe</code>:</li>
+</ol>
+<p><code>ini
+   TV_HOST=192.168.1.40
+   TV_PORT=5555
+   ADB_PATH=C:\ruta\a\platform-tools\adb.exe</code></p>
+<ol start="3">
+<li>Arranca Apache y abre <code>http://localhost/tvbox/</code>.</li>
+</ol>
+<p>El panel solo responde a peticiones del propio PC. Si lo abres desde otro aparato de la red verás «Solo desde este PC». Es a propósito: el panel puede instalar y desinstalar apps sin pedir contraseña.</p>
+</section>
+<section class="bloque" aria-labelledby="si-algo-no-va"><h2 id="si-algo-no-va">Si algo no va</h2>
+<p><strong><code>adb connect</code> dice «failed to authenticate».</strong> Mira la tele: está esperando que aceptes el aviso de depuración.</p>
+<p><strong>La caja cambió de IP.</strong> Vuelve a hacer <code>adb connect</code> con la nueva y, si usas el panel, cámbiala en <code>.env</code>. Mejor reservarla en el router.</p>
+<p><strong>El botón Inicio abre la pantalla de Google.</strong> El inicio de Google sigue activo. Repite el <code>pm disable-user</code> del paso 6.</p>
+<p><strong>«Seguir viendo» no aparece nunca.</strong> Falta el permiso de notificaciones del paso 7. Ojo: solo funciona con apps que publican lo que reproducen (YouTube, Filmin, VLC sí; algunas apps de TV no).</p>
+<p><strong>Los botones Reiniciar y Apagar no hacen nada.</strong> Falta el permiso de accesibilidad: repite las dos líneas de <code>enabled_accessibility_services</code> y <code>accessibility_enabled</code> del paso 7.</p>
+</section>
+<section class="bloque" aria-labelledby="volver-a-como-estaba"><h2 id="volver-a-como-estaba">Volver a como estaba</h2>
+<p>Todo es reversible. Para dejar la caja como venía de fábrica:</p>
+<div class="codigo"><button class="copiar" type="button">Copiar</button><pre><code class="language-powershell">adb shell pm enable com.google.android.tvlauncher
+adb shell settings put secure screensaver_components com.google.android.backdrop/.Backdrop
+adb shell settings put secure enabled_accessibility_services &quot;&quot;
+adb uninstall es.casa.inicio
+</code></pre></div>
+<p>En la tercera línea, si tenías otros servicios de accesibilidad activos, ponlos en lugar de las comillas vacías. Y en la segunda, usa el salvapantallas que apuntaste en el paso 7 si era otro.</p>
+<p>Por último, si quieres cerrar la puerta de red de ADB, desactiva <strong>Depuración USB</strong> en las opciones de desarrollador.</p></section>
+    </article>
+  </div>
+  <nav class="paso" aria-label="Siguiente manual"><span></span><a class="paso-sig" href="../manuales/02-configuracion.html"><small>Siguiente</small>Configuración</a></nav>
+</main>
+<footer class="pie"><p>Inicio para Android TV · <a href="../index.html">Portada</a></p></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
+<script src="../estilo/manual.js"></script>
+</body>
+</html>

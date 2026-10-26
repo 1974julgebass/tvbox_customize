@@ -1,0 +1,65 @@
+/* Estilo «Cristal líquido»: manchas de color lentas tras un cristal con reflejo en los bordes. */
+@font-face { font-family: 'Bricolage Grotesque'; font-weight: 400; font-display: block; src: url('../fonts/bricolage-grotesque-400.woff2') format('woff2'); }
+@font-face { font-family: 'Bricolage Grotesque'; font-weight: 600; font-display: block; src: url('../fonts/bricolage-grotesque-600.woff2') format('woff2'); }
+@font-face { font-family: 'Bricolage Grotesque'; font-weight: 800; font-display: block; src: url('../fonts/bricolage-grotesque-800.woff2') format('woff2'); }
+
+.stage { background: #05070B; font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
+.ambiente { display: none; }
+
+/* Manchas: del color de la app, mezcladas con violeta y cian, derivando muy despacio */
+.manchas { display: block; opacity: 0; transition: opacity .9s ease; will-change: opacity; }
+.manchas.on { opacity: 1; }
+.mancha { width: 1200px; height: 1200px; animation: deriva 28s ease-in-out infinite alternate; }
+.m1 { left: -380px; top: -620px; opacity: .55; background: radial-gradient(circle, var(--app) 0%, transparent 62%); }
+.m2 { right: -460px; top: -300px; opacity: .32; animation-duration: 36s; background: radial-gradient(circle, color-mix(in srgb, var(--app) 55%, #7B5CFF) 0%, transparent 62%); }
+.m3 { left: 520px; bottom: -760px; opacity: .26; animation-duration: 44s; background: radial-gradient(circle, color-mix(in srgb, var(--app) 45%, #00C2FF) 0%, transparent 62%); }
+@keyframes deriva { to { transform: translate(140px, 90px) scale(1.12); } }
+
+/* Cristal con luz: degradado sutil, filo brillante arriba y sombra profunda */
+.cristal {
+  background: linear-gradient(160deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, .04) 60%);
+  -webkit-backdrop-filter: blur(44px) saturate(190%);
+  backdrop-filter: blur(44px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, .12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), inset 0 -1px 0 rgba(255, 255, 255, .06), 0 24px 60px rgba(0, 0, 0, .35);
+  border-radius: 32px;
+}
+
+.saludo { font-size: 46px; font-weight: 800; letter-spacing: -.03em; }
+.fecha { font-size: 26px; }
+.hora { font-size: 92px; font-weight: 800; letter-spacing: -.05em; }
+.tiempo-mini { font-weight: 600; }
+.cont-titulo { font-size: 44px; font-weight: 800; letter-spacing: -.035em; }
+.cont-sub { font-size: 25px; color: rgba(255, 255, 255, .7); }
+
+.tile { border-radius: 30px; }
+.tile-app { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55), inset 0 0 0 1px rgba(255, 255, 255, .12), 0 14px 34px rgba(0, 0, 0, .45); }
+.tile-marca { font-weight: 800; letter-spacing: -.03em; }
+.fila-otras .tile { border-radius: 24px; }
+.foco > .tile, .tile.foco { box-shadow: 0 30px 60px rgba(0, 0, 0, .55), 0 0 0 3px #fff, 0 0 60px color-mix(in srgb, var(--app) 70%, transparent); }
+
+.t-titulo { font-weight: 600; letter-spacing: -.02em; }
+.foco > .tarjeta { background-color: rgba(255, 255, 255, .14); }
+.w-temp, .sol p, .caja dd { font-weight: 800; letter-spacing: -.035em; }
+.franja-luz { background: linear-gradient(90deg, color-mix(in srgb, var(--app) 40%, #FFB347), #FFE08A, #FFB347); }
+
+/* En la caja (Amlogic de gama baja) el desenfoque real y las manchas animadas bajan a ~7 fps:
+   cristal imitado con un velo opaco, fondo quieto y solo transform en las transiciones. */
+.en-caja .cristal {
+  -webkit-backdrop-filter: none; backdrop-filter: none;
+  background: linear-gradient(160deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, .05) 60%), rgba(12, 15, 22, .55);
+}
+.en-caja .mancha { animation: none; }
+.en-caja .tile, .en-caja .tarjeta { transition: transform .25s var(--ease); }
+.en-caja .tile-app { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5); }
+.en-caja .cristal { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45); }
+.en-caja .foco > .tile, .en-caja .tile.foco, .en-caja .foco > .tarjeta { box-shadow: 0 0 0 3px #fff, 0 12px 24px rgba(0, 0, 0, .5); }
+/* Cada fila repinta solo lo suyo */
+.en-caja .fila-apps, .en-caja .contenido, .en-caja .fila-otras, .en-caja .widgets, .en-caja .cab { contain: layout paint; }
+
+@media (prefers-reduced-motion: reduce) { .mancha { animation: none; } .manchas { transition: none; } }
+
+/* En la caja el cristal no desenfoca: los paneles que van encima de otros, opacos, para que no se mezclen */
+.en-caja .menu { background: rgba(5, 7, 10, .78); }
+.en-caja .menu-panel { background: #1B2029; }
+.en-caja .hoja-panel { background: #171B23; }

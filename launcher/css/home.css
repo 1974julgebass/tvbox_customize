@@ -1,0 +1,438 @@
+/* Pantalla de inicio de la Mi Box: fondo oscuro liso, fila de apps, segunda fila con el contenido de la app
+   enfocada (guía de TV o lo último visto) y tarjetas de cristal con el tiempo, el sol y la caja.
+   Lienzo fijo de 1920×1080 escalado a la ventana (en la caja el WebView mide 960×540 en px CSS). */
+
+
+:root {
+  --fondo: #0B0E13;
+  --texto: #FFFFFF;
+  --texto-2: rgba(255, 255, 255, .76);
+  --texto-3: rgba(255, 255, 255, .58);
+  --cristal: rgba(255, 255, 255, .07);
+  --cristal-borde: rgba(255, 255, 255, .13);
+  --cristal-brillo: rgba(255, 255, 255, .24);
+  --anillo: 0 0 0 3px rgba(255, 255, 255, .92);
+  --verde: #5BE07A;
+  --ambar: #FFC94D;
+  --rojo: #FF6B6B;
+  --ease: cubic-bezier(.2, .9, .25, 1);
+  --radio: 26px;
+  --margen: 96px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; width: 100%; overflow: hidden; }
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: rgba(255, 255, 255, .3); }
+svg { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+
+/* Lienzo */
+.stage {
+  position: absolute; left: 0; top: 0;
+  width: 1920px; height: 1080px;
+  transform-origin: 0 0;
+  overflow: hidden;
+  background: var(--fondo);
+}
+/* Luz ambiente: un resplandor muy tenue del color de la app enfocada, en lo alto. Dos capas que se cruzan. */
+.ambiente {
+  position: absolute; inset: 0;
+  background: radial-gradient(1200px 640px at 22% -12%, var(--amb, transparent) 0%, transparent 72%);
+  opacity: 0;
+  transition: opacity .9s ease;
+  pointer-events: none;
+}
+.ambiente.on { opacity: .30; }
+
+/* Cristal */
+.cristal {
+  background: var(--cristal);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid var(--cristal-borde);
+  border-top-color: var(--cristal-brillo);
+  border-radius: var(--radio);
+}
+
+/* Cabecera */
+.cab {
+  position: absolute; left: var(--margen); right: var(--margen); top: 40px;
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.saludo { font-size: 40px; font-weight: 600; letter-spacing: -.02em; }
+.fecha { font-size: 26px; color: var(--texto-2); margin-top: 4px; }
+.fecha::first-letter { text-transform: uppercase; }
+.cab-der { display: flex; align-items: center; gap: 34px; }
+.tiempo-mini { display: flex; align-items: center; gap: 12px; font-size: 32px; font-weight: 500; color: var(--texto-2); }
+.tiempo-mini svg { width: 38px; height: 38px; }
+.hora { font-size: 60px; font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+
+/* Carriles horizontales (apps y contenido) */
+.carril {
+  list-style: none;
+  display: flex; gap: 32px;
+  padding: 0 var(--margen);
+  transition: transform .45s var(--ease);
+}
+.carril > li { position: relative; flex: none; cursor: pointer; }
+
+/* Fila de apps */
+.fila-apps { position: absolute; left: 0; right: 0; top: 124px; height: 206px; overflow: hidden; padding-top: 26px; }
+.tile {
+  position: relative;
+  width: 224px; height: 134px;
+  border-radius: 22px;
+  display: grid; place-items: center;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .35);
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease);
+}
+.tile-app { background: var(--c); }
+.tile-app::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .2) 0%, rgba(255, 255, 255, 0) 48%, rgba(0, 0, 0, .14) 100%);
+}
+.tile-marca { position: relative; font-size: 32px; font-weight: 700; letter-spacing: -.02em; text-align: center; padding: 0 14px; line-height: 1.05; }
+.tile img { width: 100%; height: 100%; object-fit: cover; }
+.tile-cristal svg { width: 52px; height: 52px; }
+/* Brillo que cruza la tarjeta al recibir el foco */
+.tile::after, .tarjeta::after {
+  content: ''; position: absolute; top: -20%; bottom: -20%; left: 0; width: 45%;
+  background: linear-gradient(100deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .28) 50%, rgba(255, 255, 255, 0) 100%);
+  transform: translateX(-160%) skewX(-12deg);
+  pointer-events: none;
+}
+.foco > .tile, .tile.foco { transform: scale(1.14); box-shadow: 0 30px 50px rgba(0, 0, 0, .55), var(--anillo); z-index: 2; }
+.foco > .tile::after, .tile.foco::after, .foco > .tarjeta::after { transition: transform .9s var(--ease); transform: translateX(330%) skewX(-12deg); }
+.tile-nombre {
+  position: absolute; left: 50%; top: 150px; transform: translateX(-50%);
+  font-size: 24px; font-weight: 500; white-space: nowrap; color: var(--texto);
+  opacity: 0; transition: opacity .2s;
+}
+.foco > .tile-nombre { opacity: 1; }
+/* Arriba el nombre ya sale en grande en la segunda fila */
+.fila-apps .tile-nombre { display: none; }
+/* La app cuyo contenido se ve abajo, cuando el foco está en la segunda fila */
+.elegida > .tile { box-shadow: 0 10px 24px rgba(0, 0, 0, .35), 0 0 0 2px rgba(255, 255, 255, .45); }
+
+/* Tercera fila: el resto de apps, más pequeñas */
+.fila-otras { position: absolute; left: 0; right: 0; top: 652px; height: 210px; overflow: hidden; padding-top: 22px; }
+.fila-otras .carril { gap: 28px; }
+.fila-otras .tile { width: 188px; height: 106px; border-radius: 18px; }
+.fila-otras .tile-marca { font-size: 25px; }
+.fila-otras .tile-cristal svg { width: 42px; height: 42px; }
+.fila-otras .tile-nombre { top: 120px; font-size: 24px; }
+
+/* Segunda fila: contenido de la app */
+.contenido { position: absolute; left: 0; right: 0; top: 320px; }
+.cont-cab { padding: 0 var(--margen); display: flex; align-items: baseline; gap: 22px; }
+.cont-titulo { font-size: 36px; font-weight: 600; letter-spacing: -.02em; }
+.cont-sub { font-size: 24px; color: var(--texto-3); }
+.cont-ventana { height: 262px; overflow: hidden; padding-top: 18px; }
+.contenido.cambia .cont-cab, .contenido.cambia .cont-ventana { animation: aparece .45s var(--ease); }
+@keyframes aparece { from { opacity: 0; transform: translateY(14px); } }
+
+.tarjeta {
+  position: relative;
+  width: 372px; height: 228px;
+  padding: 20px 24px;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  transition: transform .3s var(--ease), box-shadow .3s var(--ease), background-color .3s;
+}
+.foco > .tarjeta { transform: scale(1.06); box-shadow: 0 30px 50px rgba(0, 0, 0, .5), var(--anillo); background-color: rgba(255, 255, 255, .12); }
+.t-canal { font-size: 24px; font-weight: 600; color: var(--texto-2); display: flex; align-items: center; gap: 12px; min-width: 0; }
+.t-nombre { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-canal .vivo { color: var(--rojo); font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.t-canal .vivo::before { content: ''; width: 9px; height: 9px; border-radius: 50%; background: currentColor; }
+.t-titulo {
+  font-size: 28px; font-weight: 600; letter-spacing: -.015em; line-height: 1.2; margin-top: 8px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.t-hora { font-size: 23px; color: var(--texto-3); margin-top: 8px; }
+.barra { height: 5px; border-radius: 3px; background: rgba(255, 255, 255, .16); margin-top: auto; overflow: hidden; }
+.barra > i { display: block; height: 100%; background: #fff; border-radius: 3px; }
+.t-despues { font-size: 23px; color: var(--texto-3); margin-top: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-despues b { color: var(--texto-2); font-weight: 500; }
+
+/* Tarjeta de algo visto: franja de color de la app con el botón de seguir */
+.t-portada {
+  margin: -20px -24px 12px; height: 62px;
+  background: linear-gradient(135deg, var(--c), color-mix(in srgb, var(--c) 45%, #000));
+  display: flex; align-items: center; padding: 0 24px;
+}
+.t-portada svg { width: 34px; height: 34px; fill: #fff; stroke: none; }
+.tarjeta-hist .t-titulo { margin-top: 0; font-size: 26px; }
+.tarjeta-hist .t-hora { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tarjeta-vacia { width: 760px; justify-content: center; }
+.tarjeta-vacia .t-titulo { font-size: 28px; }
+.tarjeta-vacia .t-hora { font-size: 22px; line-height: 1.4; }
+
+/* Tarjetas de información */
+.widgets {
+  position: absolute; left: var(--margen); right: var(--margen); bottom: 40px;
+  display: grid; grid-template-columns: 1.7fr 1fr 1fr; gap: 28px;
+  height: 194px;
+}
+.widgets .cristal { padding: 20px 26px; display: flex; flex-direction: column; min-width: 0; }
+.w-pie { font-size: 23px; color: var(--texto-2); margin-top: auto; }
+.w-pie b { color: var(--texto); font-weight: 600; }
+.w-cab { display: flex; align-items: center; gap: 16px; }
+.w-icono-grande { width: 54px; height: 54px; stroke-width: 1.5; flex: none; }
+.w-temp { font-size: 50px; font-weight: 600; letter-spacing: -.03em; line-height: 1; }
+.w-sub { font-size: 22px; color: var(--texto-2); margin-top: 4px; white-space: nowrap; }
+.horas { list-style: none; display: flex; gap: 26px; margin-left: auto; }
+.horas li { text-align: center; }
+.horas .h { font-size: 22px; color: var(--texto-3); }
+.horas svg { width: 28px; height: 28px; margin: 3px auto 1px; display: block; }
+.horas .t { font-size: 24px; font-weight: 600; }
+
+.sol { display: flex; gap: 30px; }
+.sol p { display: flex; align-items: center; gap: 10px; font-size: 32px; font-weight: 600; letter-spacing: -.02em; }
+.sol svg { width: 30px; height: 30px; color: var(--texto-3); }
+.franja { position: relative; height: 7px; margin: 16px 0 12px; background: rgba(255, 255, 255, .14); border-radius: 4px; }
+.franja-luz { position: absolute; top: 0; bottom: 0; background: linear-gradient(90deg, #FFB347, #FFE08A, #FFB347); border-radius: 4px; }
+.franja-ahora { position: absolute; top: -5px; width: 17px; height: 17px; margin-left: -8px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 4px rgba(255, 255, 255, .22); }
+.franja + .w-pie { margin-top: 0; }
+.luna { display: flex; align-items: center; gap: 12px; font-size: 23px; color: var(--texto-2); margin-top: 10px; }
+.luna-disco { width: 28px; height: 28px; stroke: none; flex: none; }
+.luna-fondo { fill: rgba(255, 255, 255, .16); }
+.luna-luz { fill: #fff; }
+
+.caja { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; }
+.caja dt { font-size: 22px; line-height: 1.2; color: var(--texto-3); }
+.caja dd { font-size: 29px; line-height: 1.2; font-weight: 600; letter-spacing: -.02em; margin-top: 2px; white-space: nowrap; }
+.caja dd small { font-size: 22px; font-weight: 400; color: var(--texto-2); letter-spacing: 0; }
+.caja .ok { color: var(--verde); }
+.caja .regular { color: var(--ambar); }
+.caja .mal { color: var(--rojo); }
+
+/* Hoja: todas las apps y ajustes */
+.hoja { position: absolute; inset: 0; z-index: 10; background: rgba(5, 7, 10, .62); display: grid; place-items: center; }
+.hoja[hidden] { display: none; }
+.hoja-panel { width: 1580px; max-height: 900px; padding: 48px 56px 56px; background: rgba(28, 33, 42, .86); animation: sube .4s var(--ease); }
+@keyframes sube { from { opacity: 0; transform: translateY(30px) scale(.98); } }
+.hoja-titulo { font-size: 42px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 36px; }
+.hoja-rejilla { list-style: none; display: grid; grid-template-columns: repeat(5, 224px); gap: 40px 52px; justify-content: space-between; }
+.hoja-rejilla .item { display: flex; flex-direction: column; align-items: center; gap: 14px; cursor: pointer; }
+.hoja-rejilla .item-nombre { font-size: 24px; line-height: 1.2; text-align: center; color: var(--texto-2); transition: color .2s; }
+/* El nombre de lo enfocado, por encima de la sombra de su propia tarjeta (que lo oscurecía) */
+.hoja-rejilla .item.foco .item-nombre { position: relative; z-index: 3; transform: translateY(8px); transition: color .2s, transform .3s var(--ease); }
+.hoja-rejilla .item.foco > .tile { box-shadow: 0 14px 26px rgba(0, 0, 0, .45), var(--anillo); }
+.hoja-rejilla .item.foco .item-nombre { color: var(--texto); }
+
+.muestra { position: absolute; right: 24px; top: 16px; font-size: 17px; color: var(--texto-3); padding: 3px 12px; border-radius: 999px; border: 1px solid var(--cristal-borde); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tile, .tarjeta, .carril, .ambiente { transition: none; }
+  .foco > .tile::after, .tile.foco::after, .foco > .tarjeta::after { transition: none; transform: translateX(-160%); }
+  .contenido.cambia .cont-cab, .contenido.cambia .cont-ventana, .hoja-panel { animation: none; }
+}
+
+/* ---- Color de la app y manchas de fondo (las pinta tema-liquido.css) ---- */
+/* Color de la app enfocada, animable al cambiar de app. */
+@property --app { syntax: '<color>'; inherits: true; initial-value: #2B3340; }
+.stage { --app: #2B3340; }
+.manchas { position: absolute; inset: 0; overflow: hidden; pointer-events: none; display: none; }
+.mancha { position: absolute; border-radius: 50%; }
+
+/* Menú de una app */
+.menu { position: absolute; inset: 0; z-index: 30; background: rgba(5, 7, 10, .55); display: grid; place-items: center; }
+.menu[hidden] { display: none; }
+.menu-panel { width: 620px; padding: 32px; background: rgba(28, 33, 42, .9); animation: sube .3s var(--ease); }
+.menu-cab { display: flex; align-items: center; gap: 22px; margin-bottom: 22px; }
+.menu-cab .tile { width: 160px; height: 96px; border-radius: 18px; flex: none; }
+.menu-cab .tile-marca { font-size: 22px; }
+.menu-nombre { font-size: 34px; font-weight: 800; letter-spacing: -.02em; }
+.menu-lista { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.menu-lista li {
+  display: flex; align-items: center; gap: 18px;
+  padding: 14px 18px; border-radius: 16px;
+  font-size: 27px; font-weight: 600; color: var(--texto-2); cursor: pointer;
+}
+.menu-lista svg { width: 30px; height: 30px; flex: none; }
+.menu-lista li.foco { background: #fff; color: #0B0E13; }
+
+/* Aviso breve al pie */
+.aviso {
+  position: absolute; left: 50%; bottom: 250px; z-index: 40;
+  transform: translate(-50%, 20px); opacity: 0;
+  padding: 16px 30px; border-radius: 999px;
+  font-size: 26px; font-weight: 600; white-space: nowrap;
+  background: rgba(28, 33, 42, .92);
+  transition: opacity .25s, transform .35s var(--ease);
+  pointer-events: none;
+}
+.aviso.ver { opacity: 1; transform: translate(-50%, 0); }
+
+/* Mover: la app cogida se eleva y lleva flechas a los lados */
+.moviendo .foco > .tile { transform: scale(1.14) translateY(-8px); }
+.moviendo .foco::before, .moviendo .foco::after {
+  position: absolute; top: 50%; z-index: 3; transform: translateY(-50%);
+  font-size: 34px; font-weight: 800; color: #fff; text-shadow: 0 2px 8px rgba(0, 0, 0, .6);
+}
+.moviendo .foco::before { content: '◀'; left: -34px; }
+.moviendo .foco::after { content: '▶'; right: -34px; }
+.moviendo .contenido, .moviendo .widgets { opacity: .35; transition: opacity .3s; }
+
+/* Todas las apps: las que están en el inicio llevan un punto; las ocultas, apagadas */
+.hoja-rejilla .item { position: relative; }
+.hoja-rejilla .item.en-inicio .item-nombre::after { content: ''; display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--verde); margin-left: 10px; vertical-align: middle; }
+.hoja-rejilla .item.oculta { opacity: .38; }
+.hoja-rejilla .item.oculta.foco { opacity: .8; }
+
+/* Ciudad del tiempo: nombre en la tarjeta y selector */
+.w-lugar { font-size: 22px; font-weight: 600; color: var(--texto-2); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 320px; }
+.ciudad-panel { width: 820px; }
+.ciudad-titulo { font-size: 38px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 22px; }
+.ciudad-buscar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 0 22px; height: 72px; border-radius: 18px;
+  background: rgba(255, 255, 255, .08); border: 2px solid rgba(255, 255, 255, .14);
+  cursor: text;
+}
+.ciudad-buscar svg { width: 30px; height: 30px; color: var(--texto-3); flex: none; }
+.ciudad-buscar input {
+  flex: 1; min-width: 0; background: none; border: 0; outline: 0;
+  font: 600 28px 'Bricolage Grotesque', system-ui, sans-serif; color: #fff; caret-color: #fff;
+}
+.ciudad-buscar input::placeholder { color: var(--texto-3); }
+.ciudad-buscar.foco { border-color: #fff; background: rgba(255, 255, 255, .14); }
+.ciudad-estado { font-size: 21px; color: var(--texto-3); margin: 14px 4px 6px; min-height: 26px; }
+.ciudad-lista { max-height: 520px; overflow: hidden; }
+.ciudad-lista li small { font-size: 21px; font-weight: 400; color: var(--texto-3); margin-left: auto; padding-left: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 380px; }
+.ciudad-lista li.foco small { color: rgba(11, 14, 19, .6); }
+.ciudad-lista li.actual span::after { content: ' · ahora'; font-weight: 400; opacity: .7; }
+
+/* Logos de canal (PNG transparentes y claros) en las tarjetas de la guía y en el menú */
+.t-logo { flex: none; height: 34px; width: auto; max-width: 96px; object-fit: contain; object-position: left center; }
+.t-canal { align-items: center; min-height: 34px; }
+.t-campana { width: 20px; height: 20px; vertical-align: -3px; margin-right: 6px; color: var(--ambar); }
+.menu-logo { width: 160px; height: 96px; border-radius: 18px; flex: none; display: grid; place-items: center; background: rgba(255, 255, 255, .06); }
+.menu-logo img { max-width: 120px; max-height: 64px; object-fit: contain; }
+.menu-lista li small { font-size: 21px; font-weight: 400; color: var(--texto-3); margin-left: auto; padding-left: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+.menu-lista li.foco small { color: rgba(11, 14, 19, .6); }
+.menu-lista li span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Tarjeta «En directo» de la primera fila */
+.tile-directo svg { color: #FF6B6B; }
+
+/* Abrir una app: capa del color de la app que crece desde la tarjeta hasta toda la pantalla */
+.lanza {
+  position: absolute; left: 0; top: 0; z-index: 60;
+  width: 1920px; height: 1080px;
+  transform-origin: 0 0;
+  background: var(--c, #2B3340);
+  border-radius: 22px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.lanza[hidden] { display: none; }
+.lanza img { width: 100%; height: 100%; object-fit: cover; transition: opacity .3s .12s; }
+.lanza.va { transition: transform .42s cubic-bezier(.3, .9, .25, 1), border-radius .42s; border-radius: 0; }
+.lanza.va img { opacity: 0; }
+.lanza.sale { opacity: 0; transition: opacity .3s; }
+
+/* Modo noche: velo oscuro fijo (barato: una capa quieta) */
+.noche .stage::after {
+  content: ''; position: absolute; inset: 0; z-index: 55;
+  background: rgba(0, 0, 0, .34); pointer-events: none;
+}
+
+/* Menú más ancho para que quepan los programas de un canal */
+.menu-panel { width: 820px; }
+.menu-lista li span { flex: 1; min-width: 0; }
+.menu-lista li small { flex: none; max-width: 300px; font-size: 22px; }
+
+/* Icono + nombre corto en las tarjetas propias (En directo, Buscar, Todas, Ajustes) */
+.tile-cristal { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; }
+.tile-cristal svg { width: 44px; height: 44px; stroke-width: 2; }
+.tile-txt { font-size: 24px; font-weight: 600; color: var(--texto-2); }
+.fila-otras .tile-cristal svg { width: 36px; height: 36px; }
+.fila-otras .tile-txt { font-size: 22px; }
+.foco > .tile-cristal .tile-txt { color: #fff; }
+/* Ya llevan el nombre dentro: sin la etiqueta de debajo */
+.fila-otras li:has(.tile-cristal) .tile-nombre { display: none; }
+
+/* Píldora del temporizador junto a la hora */
+.temporiza { display: flex; align-items: center; gap: 8px; font-size: 24px; font-weight: 600; color: var(--ambar); padding: 6px 16px; border-radius: 999px; background: rgba(255, 201, 77, .12); border: 1px solid rgba(255, 201, 77, .35); }
+.temporiza[hidden] { display: none; }
+.temporiza svg { width: 26px; height: 26px; }
+
+/* «Seguir viendo»: nombre de la app en la franja de color */
+.t-portada { gap: 12px; }
+.t-app { font-size: 22px; font-weight: 700; color: #fff; text-shadow: 0 1px 4px rgba(0, 0, 0, .35); }
+.tile-cristal svg[class] { stroke-width: 2; }
+
+/* «Todas las apps» por páginas de 3 filas: la ventana recorta y la rejilla salta de página en página */
+.hoja-ventana { height: 650px; overflow: hidden; margin: -16px -16px 0; padding: 16px; }
+.hoja-rejilla { transition: transform .45s var(--ease); }
+.hoja-pie { display: flex; align-items: baseline; gap: 32px; min-height: 34px; margin-top: 18px; }
+.hoja-ayuda { flex: 1; font-size: 26px; color: var(--texto-2); }
+.hoja-ayuda .punto { display: inline-block; width: 11px; height: 11px; border-radius: 50%; background: var(--verde); margin-right: 8px; vertical-align: middle; }
+.hoja-pagina { text-align: right; font-size: 24px; color: var(--texto-3); white-space: nowrap; }
+
+/* Usar el móvil: QR grande a la izquierda y los pasos a la derecha */
+.qr-panel { width: 1120px; display: flex; gap: 48px; align-items: center; padding: 44px; }
+.qr-codigo { width: 400px; height: 400px; flex: none; border-radius: 20px; overflow: hidden; background: rgba(255, 255, 255, .06); display: grid; place-items: center; }
+.qr-codigo svg { width: 100%; height: 100%; display: block; }
+.qr-pasos { margin: 6px 0 0; padding-left: 30px; font-size: 27px; line-height: 1.45; color: var(--texto-2); }
+.qr-pasos li { margin: 8px 0; }
+.qr-estado { margin-top: 22px; font-size: 24px; font-weight: 600; color: var(--texto); }
+.qr-nota { margin-top: 10px; font-size: 21px; color: var(--texto-3); }
+
+/* Luna: fase y, a la derecha, salida y puesta */
+.luna-horas { margin-left: auto; display: flex; align-items: center; gap: 4px; font-weight: 600; color: var(--texto); white-space: nowrap; }
+#luna-texto { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.luna-horas svg { width: 22px; height: 22px; color: var(--texto-3); margin-left: 8px; }
+
+/* Instalar app: lista de .apk de la caja (icono, nombre, versión · tamaño · dónde) y el progreso debajo */
+.inst-panel { width: 1040px; }
+.inst-lista { max-height: 540px; overflow: hidden; }
+.inst-lista li { padding: 12px 18px; }
+.inst-lista .inst-ic { width: 56px; height: 56px; flex: none; border-radius: 14px; display: grid; place-items: center; background: rgba(255, 255, 255, .08); overflow: hidden; }
+.inst-lista .inst-ic img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.inst-lista .inst-ic svg { width: 30px; height: 30px; }
+.inst-lista .inst-txt { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.inst-lista .inst-txt b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.inst-lista .inst-txt small { margin: 0; padding: 0; max-width: none; font-size: 22px; }
+.inst-lista .inst-marca { flex: none; padding: 6px 14px; border-radius: 999px; font-size: 22px; font-weight: 600; background: rgba(255, 255, 255, .1); color: var(--texto-2); }
+.inst-lista .inst-marca.nueva { background: rgba(91, 224, 122, .16); color: var(--verde); }
+.inst-lista .inst-marca.vieja, .inst-lista .inst-marca.rota { background: rgba(255, 107, 107, .14); color: var(--rojo); }
+.inst-lista li.foco .inst-marca { background: rgba(11, 14, 19, .1); color: #0B0E13; }
+.inst-lista li.foco .inst-ic { background: rgba(11, 14, 19, .08); color: #0B0E13; }
+.inst-lista li.rota { opacity: .55; }
+.inst-vacia { padding: 10px 4px 4px; font-size: 24px; line-height: 1.45; color: var(--texto-2); }
+.inst-vacia p + p { margin-top: 12px; }
+.inst-vacia .inst-vacia-titulo { font-size: 28px; font-weight: 600; color: var(--texto); }
+.inst-estado { margin-top: 22px; padding-top: 22px; border-top: 1px solid rgba(255, 255, 255, .12); display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.inst-barra { flex: 1 0 100%; height: 8px; border-radius: 99px; background: rgba(255, 255, 255, .1); overflow: hidden; }
+.inst-barra i { display: block; height: 100%; width: 100%; border-radius: inherit; background: #fff; transform-origin: left; transform: scaleX(var(--pct, 0)); transition: transform .4s var(--ease); }
+/* Instalando no tiene porcentaje: un tramo que va y viene (solo transform). */
+.inst-barra.sin-pct i { width: 30%; transform: none; animation: va-y-viene 1.3s ease-in-out infinite alternate; }
+@keyframes va-y-viene { from { transform: translateX(0); } to { transform: translateX(233%); } }
+.inst-estado.hecha .inst-barra, .inst-estado.error .inst-barra { display: none; }
+.inst-texto { flex: 1; font-size: 26px; font-weight: 600; }
+.inst-estado.hecha .inst-texto { color: var(--verde); }
+.inst-estado.error .inst-texto { color: var(--rojo); font-weight: 400; font-size: 24px; }
+.inst-abrir { display: flex; align-items: center; gap: 12px; padding: 12px 26px; border-radius: 16px; font-size: 26px; font-weight: 600; background: rgba(255, 255, 255, .1); cursor: pointer; }
+.inst-abrir svg { width: 26px; height: 26px; }
+.inst-abrir.foco { background: #fff; color: #0B0E13; }
+.inst-abrir[hidden], .inst-vacia[hidden], .inst-estado[hidden] { display: none; }
+
+/* Hora y género en una línea: si no cabe, se corta el género */
+.tarjeta:not(.tarjeta-vacia) .t-hora { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* Sin programación: texto secundario, no un titular repetido en cada tarjeta */
+.t-sin { margin-top: auto; margin-bottom: auto; }
+
+/* Abriendo una app: su nombre, cuando la capa ya ocupa la pantalla */
+.lanza-txt { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%); text-align: center; font-size: 44px; font-weight: 600; letter-spacing: -.02em; color: #fff; text-shadow: 0 2px 12px rgba(0, 0, 0, .35); opacity: 0; }
+.lanza.va .lanza-txt { opacity: 1; transition: opacity .3s .45s; }

@@ -1,0 +1,17 @@
+# Panel solo para este PC: maneja la TV box sin contraseña, así que nadie más de la red entra.
+# (El mando del móvil no pasa por aquí: lo sirve la propia caja, ver CLAUDE.md.)
+Require local
+
+<FilesMatch "^\.env">
+  Require all denied
+</FilesMatch>
+<FilesMatch "\.(md|py|ps1|log|json)$">
+  Require all denied
+</FilesMatch>
+
+RewriteEngine On
+RewriteRule ^(includes|storage|herramientas|android|\.impeccable)/ - [F,L]
+
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+</IfModule>

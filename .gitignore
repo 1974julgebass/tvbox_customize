@@ -1,0 +1,18 @@
+# Configuración local del panel (IP de tu caja, ruta de adb)
+.env
+storage/
+
+# Compilación de Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+
+# Firma de las versiones publicadas: nunca al repositorio
+android/firma.properties
+*.jks
+*.keystore
+
+__pycache__/
+.vscode/
+.idea/

@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#05070B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Mando</title>
+<style>
+  @font-face { font-family: 'Bricolage Grotesque'; font-weight: 400; src: url('fonts/bricolage-grotesque-400.woff2') format('woff2'); }
+  @font-face { font-family: 'Bricolage Grotesque'; font-weight: 600; src: url('fonts/bricolage-grotesque-600.woff2') format('woff2'); }
+  @font-face { font-family: 'Bricolage Grotesque'; font-weight: 800; src: url('fonts/bricolage-grotesque-800.woff2') format('woff2'); }
+  :root {
+    --fondo: #05070B; --texto: #fff; --texto-2: rgba(255, 255, 255, .72); --texto-3: rgba(255, 255, 255, .5);
+    --cristal: rgba(255, 255, 255, .07); --borde: rgba(255, 255, 255, .12); --brillo: rgba(255, 255, 255, .35);
+    --acento: #5B8CFF; --acento-fondo: #3A68E8; --verde: #5BE07A; --ambar: #FFC94D; --rojo: #FF6B6B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { background: var(--fondo); }
+  body {
+    min-height: 100dvh; color: var(--texto); background:
+      radial-gradient(600px 420px at 10% -10%, rgba(91, 140, 255, .28), transparent 70%),
+      radial-gradient(520px 380px at 110% 10%, rgba(123, 92, 255, .2), transparent 70%), var(--fondo);
+    font: 16px/1.4 'Bricolage Grotesque', system-ui, sans-serif;
+    padding: max(18px, env(safe-area-inset-top)) 16px max(28px, env(safe-area-inset-bottom));
+    user-select: none; -webkit-user-select: none; touch-action: manipulation;
+  }
+  svg { width: 26px; height: 26px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  button { font: inherit; color: inherit; border: 0; background: none; cursor: pointer; }
+  .cab { display: flex; align-items: center; justify-content: space-between; max-width: 420px; margin: 0 auto 22px; }
+  .cab h1 { font-size: 28px; font-weight: 800; letter-spacing: -.03em; }
+  .estado { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--texto-2); }
+  .estado i { width: 9px; height: 9px; border-radius: 50%; background: var(--texto-3); }
+  .estado.ok i { background: var(--verde); }
+  .estado.espera i { background: var(--ambar); }
+  .estado.mal i { background: var(--rojo); }
+  main { max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; gap: 22px; }
+  .cristal { background: linear-gradient(160deg, rgba(255, 255, 255, .11), rgba(255, 255, 255, .03) 60%); border: 1px solid var(--borde); border-top-color: var(--brillo); border-radius: 26px; }
+  .aviso { padding: 14px 16px; font-size: 15px; color: var(--texto-2); }
+  .aviso b { color: var(--texto); }
+  .aviso[hidden] { display: none; }
+
+  /* Cruceta */
+  .cruz { position: relative; width: min(84vw, 320px); aspect-ratio: 1; margin: 0 auto; border-radius: 50%; }
+  .cruz button { position: absolute; display: grid; place-items: center; color: var(--texto-2); transition: color .12s, background-color .12s; }
+  .cruz .flecha { width: 34%; height: 34%; border-radius: 50%; }
+  .cruz .flecha svg { width: 34px; height: 34px; }
+  .cruz [data-k="arriba"] { top: 0; left: 33%; }
+  .cruz [data-k="abajo"] { bottom: 0; left: 33%; }
+  .cruz [data-k="izquierda"] { left: 0; top: 33%; }
+  .cruz [data-k="derecha"] { right: 0; top: 33%; }
+  .cruz .ok {
+    inset: 30%; border-radius: 50%; font-size: 22px; font-weight: 800; color: var(--texto);
+    background: linear-gradient(160deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .06)); border: 1px solid var(--borde); border-top-color: var(--brillo);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .45);
+  }
+  .cruz button.pulsa { color: #fff; background-color: rgba(91, 140, 255, .28); }
+  .cruz .ok.pulsa { background: var(--acento-fondo); }
+
+  .fila { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .boton {
+    height: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    font-size: 12.5px; font-weight: 600; color: var(--texto-2);
+    background: var(--cristal); border: 1px solid var(--borde); border-top-color: rgba(255, 255, 255, .22);
+    transition: transform .1s, background-color .12s;
+  }
+  .boton.pulsa { transform: scale(.95); background-color: rgba(91, 140, 255, .3); color: #fff; }
+
+  .escribir { display: flex; gap: 10px; padding: 8px; }
+  .escribir input {
+    flex: 1; min-width: 0; height: 48px; padding: 0 14px; border-radius: 16px; border: 1px solid var(--borde);
+    background: rgba(0, 0, 0, .25); color: #fff; font: 600 17px 'Bricolage Grotesque', system-ui, sans-serif; outline: 0;
+  }
+  .escribir input:focus { border-color: var(--acento); }
+  .escribir input::placeholder { color: rgba(255, 255, 255, .6); }
+  .escribir button { width: 52px; height: 48px; border-radius: 16px; display: grid; place-items: center; background: var(--acento-fondo); color: #fff; }
+  .escribir button.borrar { background: var(--cristal); border: 1px solid var(--borde); }
+
+  h2 { font-size: 20px; font-weight: 800; letter-spacing: -.02em; margin: 6px 4px 0; }
+  .apps { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .apps button { width: 100%; aspect-ratio: 16 / 9.5; border-radius: 18px; overflow: hidden; display: grid; place-items: center; background: var(--c, #2B3340); box-shadow: 0 8px 20px rgba(0, 0, 0, .35); transition: transform .1s; }
+  .apps button.pulsa { transform: scale(.96); }
+  .apps img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .apps span { font-size: 17px; font-weight: 800; padding: 0 10px; text-align: center; }
+  /* Instalar app: elegir el .apk, barra de envío y resultado */
+  .instalar { padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+  .elegir { position: relative; height: 56px; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; background: var(--acento-fondo); color: #fff; cursor: pointer; }
+  .elegir input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .elegir.parado { background: var(--cristal); color: var(--texto-3); pointer-events: none; }
+  .inst { padding: 6px 8px 8px; display: flex; flex-direction: column; gap: 10px; }
+  .inst[hidden], .inst button[hidden] { display: none; }
+  .inst-archivo { display: flex; gap: 10px; align-items: baseline; font-size: 15px; }
+  .inst-archivo b { flex: 1; min-width: 0; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .inst-archivo span { color: var(--texto-3); white-space: nowrap; }
+  .barra { height: 6px; border-radius: 99px; background: rgba(255, 255, 255, .1); overflow: hidden; }
+  .barra i { display: block; height: 100%; border-radius: inherit; background: var(--acento); transform-origin: left; transform: scaleX(var(--pct, 0)); transition: transform .3s; }
+  .barra.sin-pct i { width: 30%; transform: none; animation: va 1.2s ease-in-out infinite alternate; }
+  @keyframes va { from { transform: translateX(0); } to { transform: translateX(233%); } }
+  .inst.hecha .barra, .inst.error .barra { display: none; }
+  .inst-estado { font-size: 15px; color: var(--texto-2); }
+  .inst.hecha .inst-estado { color: var(--verde); font-weight: 600; }
+  .inst.error .inst-estado { color: var(--rojo); }
+  .boton-ancho { height: 48px; border-radius: 16px; font-weight: 600; background: var(--cristal); border: 1px solid var(--borde); }
+  .boton-ancho.pulsa { background: rgba(91, 140, 255, .3); }
+
+  .pie { text-align: center; font-size: 13px; color: var(--texto-3); margin-top: 8px; }
+  .toast { position: fixed; left: 50%; bottom: max(22px, env(safe-area-inset-bottom)); transform: translate(-50%, 20px); opacity: 0; padding: 12px 18px; border-radius: 999px; background: #1B2029; border: 1px solid var(--borde); font-size: 15px; transition: opacity .2s, transform .25s; pointer-events: none; white-space: nowrap; }
+  .toast.ver { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-arriba" viewBox="0 0 24 24"><path d="M6 15l6-6 6 6"/></symbol>
+    <symbol id="i-abajo" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-izq" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></symbol>
+    <symbol id="i-der" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></symbol>
+    <symbol id="i-casa" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+    <symbol id="i-volmas" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9a4 4 0 0 1 0 6M19.5 6.5a8 8 0 0 1 0 11"/></symbol>
+    <symbol id="i-volmenos" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9a4 4 0 0 1 0 6"/></symbol>
+    <symbol id="i-silencio" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M17 9l5 6M22 9l-5 6"/></symbol>
+    <symbol id="i-retro" viewBox="0 0 24 24"><path d="M11 6l-7 6 7 6zM20 6l-7 6 7 6z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M4 5l8 7-8 7z"/><path d="M16 5v14M20 5v14"/></symbol>
+    <symbol id="i-avanza" viewBox="0 0 24 24"><path d="M13 6l7 6-7 6zM4 6l7 6-7 6z"/></symbol>
+    <symbol id="i-enviar" viewBox="0 0 24 24"><path d="M4 12l16-8-6 16-3-7z"/></symbol>
+    <symbol id="i-borrar" viewBox="0 0 24 24"><path d="M9 6h11v12H9l-6-6z"/><path d="M13 10l4 4M17 10l-4 4"/></symbol>
+    <symbol id="i-instalar" viewBox="0 0 24 24"><path d="M12 3v11M7.5 9.5 12 14l4.5-4.5M4 16v4h16v-4"/></symbol>
+    <symbol id="i-apagar" viewBox="0 0 24 24"><path d="M12 3v8"/><path d="M6.3 6.3a8 8 0 1 0 11.4 0"/></symbol>
+  </defs>
+</svg>
+
+<header class="cab">
+  <h1>Mando</h1>
+  <p class="estado" id="estado"><i></i><span>Conectando…</span></p>
+</header>
+
+<main>
+  <p class="aviso cristal" id="permiso" hidden>Mira la tele: pregunta <b>«¿Permitir depuración?»</b>. Marca <b>Permitir siempre</b> y acepta. Solo hace falta una vez.</p>
+
+  <div class="cruz cristal" aria-label="Cruceta">
+    <button class="flecha" data-k="arriba" aria-label="Arriba"><svg><use href="#i-arriba"/></svg></button>
+    <button class="flecha" data-k="izquierda" aria-label="Izquierda"><svg><use href="#i-izq"/></svg></button>
+    <button class="ok" data-k="ok">OK</button>
+    <button class="flecha" data-k="derecha" aria-label="Derecha"><svg><use href="#i-der"/></svg></button>
+    <button class="flecha" data-k="abajo" aria-label="Abajo"><svg><use href="#i-abajo"/></svg></button>
+  </div>
+
+  <div class="fila">
+    <button class="boton" data-k="atras"><svg><use href="#i-atras"/></svg>Atrás</button>
+    <button class="boton" data-k="inicio"><svg><use href="#i-casa"/></svg>Inicio</button>
+    <button class="boton" data-k="menu"><svg><use href="#i-menu"/></svg>Menú</button>
+  </div>
+  <div class="fila">
+    <button class="boton" data-k="volmenos" data-repite><svg><use href="#i-volmenos"/></svg>Bajar</button>
+    <button class="boton" data-k="silencio"><svg><use href="#i-silencio"/></svg>Silencio</button>
+    <button class="boton" data-k="volmas" data-repite><svg><use href="#i-volmas"/></svg>Subir</button>
+  </div>
+  <div class="fila">
+    <button class="boton" data-k="retroceder"><svg><use href="#i-retro"/></svg>Atrás 10 s</button>
+    <button class="boton" data-k="playpausa"><svg><use href="#i-play"/></svg>Pausa</button>
+    <button class="boton" data-k="avanzar"><svg><use href="#i-avanza"/></svg>Adelante</button>
+  </div>
+
+  <form class="escribir cristal" id="escribir" autocomplete="off">
+    <input id="texto" type="text" placeholder="Escribir en la tele" enterkeyhint="send" autocapitalize="off" spellcheck="false">
+    <button type="button" class="borrar" data-k="borrar" aria-label="Borrar letra"><svg><use href="#i-borrar"/></svg></button>
+    <button type="submit" aria-label="Enviar a la tele"><svg><use href="#i-enviar"/></svg></button>
+  </form>
+
+  <h2>Tus apps</h2>
+  <ul class="apps" id="apps"></ul>
+
+  <h2>Instalar app</h2>
+  <div class="instalar cristal">
+    <label class="elegir" id="elegir">
+      <input type="file" id="apk" accept=".apk,application/vnd.android.package-archive">
+      <svg><use href="#i-instalar"/></svg><span>Elegir archivo .apk</span>
+    </label>
+    <div class="inst" id="inst" hidden>
+      <p class="inst-archivo"><b id="inst-nombre"></b><span id="inst-tam"></span></p>
+      <div class="barra" id="inst-barra"><i></i></div>
+      <p class="inst-estado" id="inst-estado" role="status"></p>
+      <button class="boton-ancho" id="inst-abrir" type="button" hidden>Abrir en la tele</button>
+    </div>
+  </div>
+
+  <div class="fila">
+    <span></span>
+    <button class="boton" data-k="encender"><svg><use href="#i-apagar"/></svg>Apagar (reposo)</button>
+    <span></span>
+  </div>
+  <p class="pie">Mando TV Box</p>
+</main>
+
+<p class="toast" id="toast" role="status"></p>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  // En el PC (vista previa sin la caja) no hay servidor: las órdenes solo se apuntan en la consola.
+  var enCaja = location.port === '8765';
+  var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); };
+
+  function toast(t) {
+    var el = $('toast');
+    el.textContent = t;
+    el.classList.add('ver');
+    clearTimeout(toast.t);
+    toast.t = setTimeout(function () { el.classList.remove('ver'); }, 2200);
+  }
+
+  function manda(ruta, datos) {
+    if (!enCaja) { console.log('[muestra]', ruta, JSON.stringify(datos)); return Promise.resolve({}); }
+    return fetch(ruta, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Mando': '1' }, body: JSON.stringify(datos), credentials: 'same-origin' })
+      .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.error || 'Error'); return d; }); })
+      .catch(function (e) { toast(e.message === 'Failed to fetch' ? 'No llego a la tele. ¿Está encendida?' : e.message); throw e; });
+  }
+  var tecla = function (k) { if (navigator.vibrate) navigator.vibrate(12); return manda('/api/tecla', { k: k }).catch(function () {}); };
+
+  // Botones con data-k: al tocar (no al soltar, más rápido). Flechas y volumen repiten si se mantienen.
+  document.querySelectorAll('[data-k]').forEach(function (b) {
+    var repetir = 0, espera = 0;
+    var repite = b.classList.contains('flecha') || b.hasAttribute('data-repite');
+    var suelta = function () { clearTimeout(espera); clearInterval(repetir); b.classList.remove('pulsa'); };
+    b.addEventListener('pointerdown', function (e) {
+      e.preventDefault();
+      b.classList.add('pulsa');
+      tecla(b.dataset.k);
+      if (repite) espera = setTimeout(function () { repetir = setInterval(function () { tecla(b.dataset.k); }, 180); }, 450);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { b.addEventListener(ev, suelta); });
+  });
+
+  $('escribir').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var t = $('texto').value.trim();
+    if (!t) return;
+    manda('/api/texto', { t: t }).then(function () { $('texto').value = ''; toast('Escrito en la tele'); }).catch(function () {});
+  });
+
+  // Apps: primero las de la pantalla de inicio, en su orden; luego el resto por nombre.
+  function cargaApps() {
+    var pide = enCaja ? fetch('/api/apps', { credentials: 'same-origin' }).then(function (r) { return r.json(); })
+      : Promise.resolve({ apps: [{ pkg: 'demo.yt', nombre: 'YouTube', color: '#E0201B' }, { pkg: 'demo.m', nombre: 'Movistar+', color: '#1F3FE0' }], favoritas: [] });
+    pide.then(function (d) {
+      var favs = d.favoritas || [], apps = d.apps || [];
+      apps.sort(function (a, b) {
+        var ia = favs.indexOf(a.pkg), ib = favs.indexOf(b.pkg);
+        if (ia >= 0 || ib >= 0) return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+        return a.nombre.localeCompare(b.nombre, 'es');
+      });
+      $('apps').innerHTML = apps.map(function (a) {
+        return '<li><button data-pkg="' + esc(a.pkg) + '" style="--c:' + esc(a.color || '#2B3340') + '" aria-label="Abrir ' + esc(a.nombre) + '">' +
+          (a.banner ? '<img src="' + esc(a.banner) + '" alt="">' : '<span>' + esc(a.nombre) + '</span>') + '</button></li>';
+      }).join('');
+    }).catch(function () {});
+  }
+  $('apps').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-pkg]');
+    if (!b) return;
+    if (navigator.vibrate) navigator.vibrate(12);
+    manda('/api/abrir', { pkg: b.dataset.pkg }).then(function () { toast('Abriendo en la tele'); }).catch(function () {});
+  });
+
+  // Instalar app: el .apk va tal cual en el cuerpo (la caja lo escribe a disco) y luego se sigue cómo va.
+  var MAX_APK = 300 * 1024 * 1024, instT = 0, instPkg = null;
+  var megas = function (b) { return b >= 1048576 ? Math.round(b / 1048576) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB'; };
+  function pintaInst(fase, texto, pct) {
+    var caja = $('inst');
+    caja.hidden = false;
+    caja.className = 'inst ' + fase;
+    $('inst-barra').classList.toggle('sin-pct', fase === 'instalando');
+    $('inst-barra').style.setProperty('--pct', (pct || 0) / 100);
+    $('inst-estado').textContent = texto;
+    $('inst-abrir').hidden = fase !== 'hecha' || !instPkg;
+    var ocupado = fase === 'enviando' || fase === 'instalando';
+    $('elegir').classList.toggle('parado', ocupado);
+    $('elegir').querySelector('span').textContent = fase === 'enviando' ? 'Enviando…' : fase === 'instalando' ? 'Instalando…' : 'Elegir archivo .apk';
+  }
+  function sigueInst() {
+    clearTimeout(instT);
+    var pide = enCaja ? fetch('/api/instalacion', { credentials: 'same-origin' }).then(function (r) { return r.json(); })
+      : Promise.resolve(Date.now() - sigueInst.ini > 3000 ? { fase: 'hecha', nombre: sigueInst.nombre, pkg: 'demo.yt', abrible: true } : { fase: 'instalando', nombre: sigueInst.nombre });
+    pide.then(function (e) {
+      if (e.fase === 'hecha') { instPkg = e.abrible ? e.pkg : null; pintaInst('hecha', '✓ ' + e.nombre + ' instalada en la tele'); cargaApps(); return; }
+      if (e.fase === 'error') { pintaInst('error', 'No se ha instalado. ' + (e.error || '')); return; }
+      pintaInst('instalando', 'Instalando ' + (e.nombre || '') + ' en la tele…');
+      instT = setTimeout(sigueInst, 1000);
+    }).catch(function () { instT = setTimeout(sigueInst, 2000); });
+  }
+  $('apk').addEventListener('change', function () {
+    var f = this.files && this.files[0];
+    this.value = ''; // poder elegir el mismo archivo otra vez
+    if (!f) return;
+    $('inst-nombre').textContent = f.name;
+    $('inst-tam').textContent = megas(f.size);
+    instPkg = null;
+    if (!/\.apk$/i.test(f.name)) { pintaInst('error', 'Eso no es un archivo .apk.'); return; }
+    if (f.size > MAX_APK) { pintaInst('error', 'El archivo pasa de 300 MB.'); return; }
+    pintaInst('enviando', 'Enviando a la tele · 0 %', 0);
+    if (!enCaja) { sigueInst.nombre = f.name.replace(/[-_ ]?[\d.]*\.apk$/i, ''); sigueInst.ini = Date.now() + 1500; setTimeout(function () { pintaInst('enviando', 'Enviando a la tele · 100 %', 100); sigueInst(); }, 1500); return; }
+    // Si ya hay una en marcha, se dice antes de mandar megas que la caja no va a leer.
+    fetch('/api/instalacion', { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (e) {
+      if (e.fase === 'recibiendo' || e.fase === 'instalando') pintaInst('error', 'La tele ya está instalando ' + (e.nombre || 'otra app') + '. Espera a que acabe.');
+      else envia(f);
+    }).catch(function () { pintaInst('error', 'No llego a la tele. ¿Está encendida?'); });
+  });
+  function envia(f) {
+    var x = new XMLHttpRequest();
+    x.open('POST', '/api/instalar');
+    x.setRequestHeader('X-Mando', '1');
+    x.setRequestHeader('X-Nombre', encodeURIComponent(f.name));
+    x.setRequestHeader('Content-Type', 'application/vnd.android.package-archive');
+    x.upload.onprogress = function (e) {
+      if (!e.lengthComputable) return;
+      var pct = Math.round(e.loaded * 100 / e.total);
+      pintaInst('enviando', 'Enviando a la tele · ' + pct + ' %', pct);
+    };
+    x.onload = function () {
+      var d = {};
+      try { d = JSON.parse(x.responseText); } catch (err) { /* respuesta vacía */ }
+      if (x.status === 200) sigueInst();
+      else pintaInst('error', d.error || 'La tele no ha aceptado el archivo.');
+    };
+    x.onerror = function () { pintaInst('error', 'Se ha cortado el envío. ¿Sigue encendida la tele?'); };
+    x.send(f);
+  }
+  $('inst-abrir').addEventListener('click', function () {
+    if (!instPkg) return;
+    manda('/api/abrir', { pkg: instPkg }).then(function () { toast('Abriendo en la tele'); }).catch(function () {});
+  });
+
+  // Estado: si la caja aún no tiene permiso de depuración, explica qué aceptar en la tele.
+  function estado() {
+    if (!enCaja) { pinta('ok', 'Vista previa'); return; }
+    fetch('/api/estado', { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (d) {
+      var a = d.adb || '';
+      if (a === 'conectado') pinta('ok', 'Conectado');
+      else if (a === 'esperando permiso') pinta('espera', 'Acepta en la tele');
+      else pinta('espera', 'Preparando…');
+      $('permiso').hidden = a !== 'esperando permiso';
+    }).catch(function () { pinta('mal', 'Sin conexión'); });
+  }
+  function pinta(cls, txt) {
+    var el = $('estado');
+    el.className = 'estado ' + cls;
+    el.querySelector('span').textContent = txt;
+  }
+
+  if (/[?&]nuevo=1/.test(location.search)) {
+    toast('Listo: este móvil ya es el mando');
+    history.replaceState(null, '', '/');
+  }
+  cargaApps();
+  estado();
+  setInterval(function () { if (!document.hidden) estado(); }, 4000);
+})();
+</script>
+</body>
+</html>

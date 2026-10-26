@@ -1,0 +1,57 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'es.casa.inicio'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'es.casa.inicio'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+    }
+
+    // Firma de las versiones publicadas: solo si existe android/firma.properties (nunca va al repositorio).
+    def firma = rootProject.file('firma.properties')
+    if (firma.exists()) {
+        def p = new Properties()
+        firma.withInputStream { p.load(it) }
+        signingConfigs {
+            publicada {
+                storeFile file(p.storeFile)
+                storePassword p.storePassword
+                keyAlias p.keyAlias
+                keyPassword p.keyPassword
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            if (firma.exists()) signingConfig signingConfigs.publicada
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    // Cliente ADB en Java/Kotlin (mobile.dev, Apache 2.0): la caja se conecta a su propio ADB para el mando del móvil.
+    implementation 'dev.mobile:dadb:1.2.10'
+}
+
+// La interfaz es la web de ../launcher: se copia a los assets en cada compilación (assets/www).
+def web = layout.buildDirectory.dir('generated/web')
+tasks.register('copiaWeb', Copy) {
+    from rootProject.file('../launcher')
+    into web.map { it.dir('www') }
+}
+android.sourceSets.main.assets.srcDir(web)
+preBuild.dependsOn('copiaWeb')

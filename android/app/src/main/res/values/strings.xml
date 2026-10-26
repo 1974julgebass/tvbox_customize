@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accion_desc">Permite a la pantalla de inicio abrir el menú de apagado y poner la caja en reposo. No lee la pantalla.</string>
+</resources>
