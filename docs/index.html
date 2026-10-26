@@ -5,15 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Inicio para Android TV</title>
 <meta name="description" content="Una pantalla de inicio propia para cajas Android TV, sin anuncios ni recomendaciones de nadie. La hice para la Xiaomi Mi Box 4 del salón de casa porque la de Go">
+<link rel="alternate" hreflang="es" href="index.html"><link rel="alternate" hreflang="en" href="en/index.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
 <link rel="stylesheet" href="estilo/manual.css">
 </head>
-<body class="es-portada">
+<body class="es-portada" data-copiado="Copiado" data-copiar="Copiar">
 <header class="cabecera" id="cabecera">
   <a class="marca" href="index.html">Inicio <span>para Android TV</span></a>
-  <nav class="menu" aria-label="Manuales"><a href="manuales/01-instalacion.html">Instalación</a><a href="manuales/02-configuracion.html">Configuración</a><a href="manuales/03-uso.html">Uso</a></nav>
+  <div class="cabecera-der">
+    <nav class="menu" aria-label="Manuales"><a href="manuales/01-instalacion.html">Instalación</a><a href="manuales/02-configuracion.html">Configuración</a><a href="manuales/03-uso.html">Uso</a></nav>
+    <nav class="idioma" aria-label="Idioma"><a href="index.html" hreflang="es" lang="es" data-idioma="es" aria-current="true">ES</a><a href="en/index.html" hreflang="en" lang="en" data-idioma="en">EN</a></nav>
+  </div>
 </header>
 <main>
   <section class="portada">
@@ -105,7 +109,7 @@
   </div>
   <nav class="paso" aria-label="Siguiente manual"><span></span><a class="paso-sig" href="manuales/01-instalacion.html"><small>Siguiente</small>Instalación</a></nav>
 </main>
-<footer class="pie"><p>Inicio para Android TV · <a href="index.html">Portada</a></p></footer>
+<footer class="pie"><p>Inicio para Android TV · <a href="index.html">Portada</a> · <a href="https://github.com/1974julgebass/tvbox_customize" target="_blank" rel="noopener">GitHub</a></p></footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>

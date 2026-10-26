@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installation · Home for Android TV</title>
+<meta name="description" content="This guide takes you from an Android TV box fresh out of its packaging to the new home screen up and running. I set it up on a Xiaomi Mi Box 4 (Android TV 9), s">
+<link rel="alternate" hreflang="es" href="../../manuales/01-instalacion.html"><link rel="alternate" hreflang="en" href="01-installation.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<link rel="stylesheet" href="../../estilo/manual.css">
+</head>
+<body class="es-manual" data-copiado="Copied" data-copiar="Copy">
+<header class="cabecera" id="cabecera">
+  <a class="marca" href="../index.html">Home <span>for Android TV</span></a>
+  <div class="cabecera-der">
+    <nav class="menu" aria-label="Manuals"><a href="01-installation.html" aria-current="page">Installation</a><a href="02-setup.html">Setup</a><a href="03-usage.html">Usage</a></nav>
+    <nav class="idioma" aria-label="Language"><a href="../../manuales/01-instalacion.html" hreflang="es" lang="es" data-idioma="es">ES</a><a href="01-installation.html" hreflang="en" lang="en" data-idioma="en" aria-current="true">EN</a></nav>
+  </div>
+</header>
+<main>
+  <section class="portada">
+    <h1 class="titular">Installation</h1>
+    <p class="entradilla">This guide takes you from an Android TV box fresh out of its packaging to the new home screen up and running. I set it up on a Xiaomi Mi Box 4 (Android TV 9), so the menu names are the ones on that box. Other brands word things a little differently, but the steps are the same.</p>
+    
+  </section>
+  <div class="cuerpo">
+    <aside class="indice" aria-label="On this page"><p>On this page</p><ol><li><a href="#what-you-need">What you need</a></li><li><a href="#1-turn-on-developer-options-on-the-box">1. Turn on developer options on the box</a></li><li><a href="#2-install-adb-on-the-pc">2. Install ADB on the PC</a></li><li><a href="#3-connect-the-pc-to-the-box">3. Connect the PC to the box</a></li><li><a href="#4-get-the-apk">4. Get the APK</a></li><li><a href="#5-install-the-app-on-the-box">5. Install the app on the box</a></li><li><a href="#6-make-it-your-home-screen">6. Make it your home screen</a></li><li><a href="#7-grant-the-permissions">7. Grant the permissions</a></li><li><a href="#8-try-it-out">8. Try it out</a></li><li><a href="#the-pc-panel-optional">The PC panel (optional)</a></li><li><a href="#if-something-goes-wrong">If something goes wrong</a></li><li><a href="#going-back-to-how-it-was">Going back to how it was</a></li></ol></aside>
+    <article class="texto">
+<p>Allow about an hour the first time. Most of it goes into installing the tools on the PC; the box itself takes ten minutes.</p>
+<figure class="figura"><img src="../../manuales/capturas/inicio.png" alt="The home screen running" width="1920" height="1080" loading="lazy" decoding="async"><figcaption>The home screen running</figcaption></figure>
+<p>The app's interface is in Spanish. Where this guide mentions a menu on the TV, you'll see the Spanish name first and the English meaning in brackets.</p>
+
+<section class="bloque" aria-labelledby="what-you-need"><h2 id="what-you-need">What you need</h2>
+<ul>
+<li>A box or TV running <strong>Android TV 8 or later</strong>.</li>
+<li>A <strong>Windows PC</strong> on the same Wi-Fi as the box. The commands are for Windows; on Linux or Mac they work the same with your own paths.</li>
+<li>The box's <strong>remote</strong>.</li>
+<li>Only if your box won't accept a network connection at first: a <strong>USB male-to-male cable</strong> (type A on both ends). The Mi Box 4 needed one.</li>
+</ul>
+<p>No root, nothing to unlock. Everything you change can be undone in a minute (the last section shows how).</p>
+</section>
+<section class="bloque" aria-labelledby="1-turn-on-developer-options-on-the-box"><h2 id="1-turn-on-developer-options-on-the-box">1. Turn on developer options on the box</h2>
+<ol>
+<li>On the box, go to <strong>Settings → Device Preferences → About</strong>.</li>
+<li>Scroll down to <strong>Build</strong> and press OK seven times in a row. You'll see "You are now a developer".</li>
+<li>Go back. <strong>Developer options</strong> now shows up under Device Preferences.</li>
+<li>Open it and turn on <strong>USB debugging</strong>.</li>
+</ol>
+<p>Write down the box's IP address: it's under <strong>Settings → Network &amp; Internet</strong>, when you select your Wi-Fi network. Something like <code>192.168.1.40</code>. I'd reserve it in your router so it doesn't change; most routers have this in the DHCP section, tying the IP to the box's MAC address.</p>
+</section>
+<section class="bloque" aria-labelledby="2-install-adb-on-the-pc"><h2 id="2-install-adb-on-the-pc">2. Install ADB on the PC</h2>
+<p>ADB is Android's official tool for talking to a device from a computer. Open a terminal (PowerShell) and type:</p>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">winget install Google.PlatformTools
+</code></pre></div>
+<p>Close the terminal and open a new one. Check that it answers:</p>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">adb version
+</code></pre></div>
+<p>If it says it can't find <code>adb</code>, look for it in <code>%LOCALAPPDATA%\Microsoft\WinGet\Packages\</code> (a folder starting with <code>Google.PlatformTools</code>) and use the full path, or add that folder to your PATH.</p>
+</section>
+<section class="bloque" aria-labelledby="3-connect-the-pc-to-the-box"><h2 id="3-connect-the-pc-to-the-box">3. Connect the PC to the box</h2>
+<p>Try over the network first, with the IP you wrote down:</p>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">adb connect 192.168.1.40:5555
+</code></pre></div>
+<p>The TV will ask <strong>"Allow USB debugging?"</strong>. Tick <em>Always allow from this computer</em> and accept.</p>
+<p><strong>If you get "connection refused"</strong> (it happened to me with the Mi Box 4), the box isn't listening on the network yet. You have to open the door once with a cable:</p>
+<ol>
+<li>Connect the box to the PC with the USB male-to-male cable.</li>
+<li>Run <code>adb devices</code> and accept the prompt on the TV.</li>
+<li>Run <code>adb tcpip 5555</code></li>
+<li>Unplug the cable and repeat the <code>adb connect</code> above.</li>
+</ol>
+<p>On my box the port stayed open after a reboot, so I only needed the cable that one time.</p>
+<p>Check that everything works:</p>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">adb devices
+</code></pre></div>
+<p>You should see the box's IP with the word <code>device</code> next to it.</p>
+</section>
+<section class="bloque" aria-labelledby="4-get-the-apk"><h2 id="4-get-the-apk">4. Get the APK</h2>
+<p><strong>The easy way:</strong> download <code>tvbox_customize.apk</code> from the repository's <a href="https://github.com/1974julgebass/tvbox_customize/releases" target="_blank" rel="noopener">releases page</a> and skip to step 5.</p>
+<p><strong>If you'd rather build it yourself</strong>, first get the project. With Git:</p>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">git clone https://github.com/1974julgebass/tvbox_customize.git
+</code></pre></div>
+<p>Or from the repository page, with <strong>Code → Download ZIP</strong>.</p>
+<p>To build it you need three things:</p>
+<div class="tabla"><table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>How to install it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java 17</td>
+<td><code>winget install EclipseAdoptium.Temurin.17.JDK</code></td>
+</tr>
+<tr>
+<td>Android SDK (command-line tools only)</td>
+<td>Download <em>Command line tools only</em> from developer.android.com/studio, unzip them to <code>C:\Android\sdk\cmdline-tools\latest</code> and run <code>C:\Android\sdk\cmdline-tools\latest\bin\sdkmanager "platforms;android-34" "build-tools;34.0.0"</code></td>
+</tr>
+<tr>
+<td>Gradle 8.9</td>
+<td>Download the zip from gradle.org/releases and unzip it to <code>C:\Android\gradle-8.9</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>You don't need Android Studio. Accept the SDK licenses once (answer <code>y</code> to everything):</p>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">C:\Android\sdk\cmdline-tools\latest\bin\sdkmanager --licenses
+</code></pre></div>
+<p>If Gradle complains that it can't find Java, create a <code>JAVA_HOME</code> environment variable pointing to the JDK folder (something like <code>C:\Program Files\Eclipse Adoptium\jdk-17...</code>) and open a new terminal.</p>
+<p>Create the file <code>android\local.properties</code> with the SDK path (note the double backslashes):</p>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-properties">sdk.dir=C\:\\Android\\sdk
+</code></pre></div>
+<p>Then build from the project folder:</p>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">C:\Android\gradle-8.9\bin\gradle.bat -p android assembleDebug
+</code></pre></div>
+<p>The first time takes a few minutes while it downloads dependencies. The APK ends up in <code>android\app\build\outputs\apk\debug\app-debug.apk</code>.</p>
+<p>The home screen's interface lives in the <code>launcher/</code> folder (HTML, CSS and JavaScript). Every build copies it into the APK. If you change something there, build and install again.</p>
+</section>
+<section class="bloque" aria-labelledby="5-install-the-app-on-the-box"><h2 id="5-install-the-app-on-the-box">5. Install the app on the box</h2>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">adb install -r tvbox_customize.apk
+</code></pre></div>
+<p>(Or <code>app-debug.apk</code>, if you built it yourself.)</p>
+<p>It should answer <code>Success</code>. The same command works for later updates and keeps your favourites, reminders and paired phones.</p>
+</section>
+<section class="bloque" aria-labelledby="6-make-it-your-home-screen"><h2 id="6-make-it-your-home-screen">6. Make it your home screen</h2>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">adb shell cmd package set-home-activity es.casa.inicio/.MainActivity
+adb shell pm disable-user --user 0 com.google.android.tvlauncher
+</code></pre></div>
+<p>The second command disables Google's home screen. Without it, the remote's Home button keeps taking you to Google's even after you've picked another one. Nothing gets deleted: it just goes to sleep, and you can bring it back whenever you want.</p>
+<p>If your box doesn't use the classic Google TV home screen and it has a different name, find out which one it is with:</p>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">adb shell cmd package resolve-activity -a android.intent.action.MAIN -c android.intent.category.HOME
+</code></pre></div>
+</section>
+<section class="bloque" aria-labelledby="7-grant-the-permissions"><h2 id="7-grant-the-permissions">7. Grant the permissions</h2>
+<p>Android won't let a normal app grant itself these permissions, but you can grant them over ADB. Copy the whole block:</p>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">adb shell appops set es.casa.inicio GET_USAGE_STATS allow
+adb shell cmd notification allow_listener es.casa.inicio/es.casa.inicio.Escucha
+adb shell appops set es.casa.inicio SYSTEM_ALERT_WINDOW allow
+adb shell settings put secure enabled_accessibility_services es.casa.inicio/es.casa.inicio.Accion
+adb shell settings put secure accessibility_enabled 1
+adb shell settings put secure screensaver_components es.casa.inicio/es.casa.inicio.Sueno
+</code></pre></div>
+<p>What each one is for:</p>
+<div class="tabla"><table>
+<thead>
+<tr>
+<th>Permission</th>
+<th>What for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>App usage</td>
+<td>Knowing which app you used last, and opening the home screen on it.</td>
+</tr>
+<tr>
+<td>Notifications</td>
+<td>Noting what you're watching in each app ("Continue watching"). It only reads the title of what's playing; nothing leaves the box.</td>
+</tr>
+<tr>
+<td>Display over other apps</td>
+<td>The pop-up cards: a show starting, the sleep timer, an app installed from your phone.</td>
+</tr>
+<tr>
+<td>Accessibility</td>
+<td>The Restart and Power off buttons in the settings. It doesn't read the screen.</td>
+</tr>
+<tr>
+<td>Screensaver</td>
+<td>Using the app's own screensaver, with the time and your channels.</td>
+</tr>
+</tbody>
+</table></div>
+<p>Before changing the screensaver, if you want to be able to go back to the old one, note which one you have:</p>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">adb shell settings get secure screensaver_components
+</code></pre></div>
+</section>
+<section class="bloque" aria-labelledby="8-try-it-out"><h2 id="8-try-it-out">8. Try it out</h2>
+<p>Press the <strong>Home</strong> button on the remote. The new screen should appear. If you see Google's, go back to step 6.</p>
+<p>The first time you use the phone remote (or install an app), the TV will ask <strong>"Allow USB debugging?"</strong> again: that's the box asking itself for permission. Tick <em>Always allow</em> and accept. The setup manual covers this in more detail.</p>
+</section>
+<section class="bloque" aria-labelledby="the-pc-panel-optional"><h2 id="the-pc-panel-optional">The PC panel (optional)</h2>
+<p>The project also includes a web panel to control the box from your computer: see the TV screen, use the keyboard as a remote, install or disable apps, change settings and check its status.</p>
+<figure class="figura"><img src="../../manuales/capturas/panel.png" alt="PC panel" width="1440" height="900" loading="lazy" decoding="async"><figcaption>PC panel</figcaption></figure>
+<p>To use it you need a server with PHP 8 on the same PC; I use XAMPP.</p>
+<ol>
+<li>Copy the project folder into <code>C:\xampp\htdocs\</code>, for example as <code>tvbox</code>. Any folder works.</li>
+<li>Copy <code>.env.example</code> to <code>.env</code> and fill in the box's IP and the full path to <code>adb.exe</code>:</li>
+</ol>
+<p><code>ini
+   TV_HOST=192.168.1.40
+   TV_PORT=5555
+   ADB_PATH=C:\path\to\platform-tools\adb.exe</code></p>
+<ol start="3">
+<li>Start Apache and open <code>http://localhost/tvbox/</code>.</li>
+</ol>
+<p>The panel only answers requests from the PC itself. If you open it from another device on your network you'll see "Solo desde este PC" (only from this PC). That's on purpose: the panel can install and uninstall apps without asking for a password.</p>
+</section>
+<section class="bloque" aria-labelledby="if-something-goes-wrong"><h2 id="if-something-goes-wrong">If something goes wrong</h2>
+<p><strong><code>adb connect</code> says "failed to authenticate".</strong> Look at the TV: it's waiting for you to accept the debugging prompt.</p>
+<p><strong>The box changed IP.</strong> Run <code>adb connect</code> again with the new one and, if you use the panel, change it in <code>.env</code>. Better to reserve it in the router.</p>
+<p><strong>The Home button opens Google's screen.</strong> Google's home screen is still enabled. Repeat the <code>pm disable-user</code> from step 6.</p>
+<p><strong>"Continue watching" never shows up.</strong> The notifications permission from step 7 is missing. Bear in mind it only works with apps that publish what they're playing (YouTube, Filmin and VLC do; some TV apps don't).</p>
+<p><strong>The Restart and Power off buttons do nothing.</strong> The accessibility permission is missing: repeat the <code>enabled_accessibility_services</code> and <code>accessibility_enabled</code> lines from step 7.</p>
+</section>
+<section class="bloque" aria-labelledby="going-back-to-how-it-was"><h2 id="going-back-to-how-it-was">Going back to how it was</h2>
+<p>Everything is reversible. To leave the box the way it came from the factory:</p>
+<div class="codigo"><button class="copiar" type="button">Copy</button><pre><code class="language-powershell">adb shell pm enable com.google.android.tvlauncher
+adb shell settings put secure screensaver_components com.google.android.backdrop/.Backdrop
+adb shell settings put secure enabled_accessibility_services &quot;&quot;
+adb uninstall es.casa.inicio
+</code></pre></div>
+<p>On the third line, if you had other accessibility services enabled, put them in place of the empty quotes. On the second, use the screensaver you noted in step 7 if it was a different one.</p>
+<p>Finally, if you want to close ADB's network door, turn off <strong>USB debugging</strong> in the developer options.</p></section>
+    </article>
+  </div>
+  <nav class="paso" aria-label="Next manual"><span></span><a class="paso-sig" href="02-setup.html"><small>Next</small>Setup</a></nav>
+</main>
+<footer class="pie"><p>Home for Android TV · <a href="../index.html">Home</a> · <a href="https://github.com/1974julgebass/tvbox_customize" target="_blank" rel="noopener">GitHub</a></p></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
+<script src="../../estilo/manual.js"></script>
+</body>
+</html>

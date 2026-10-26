@@ -1,3 +1,5 @@
+[English](README.en.md) · Español
+
 # Inicio para Android TV
 
 Una pantalla de inicio propia para cajas Android TV, sin anuncios ni recomendaciones de nadie. La hice para la Xiaomi Mi Box 4 del salón de casa porque la de Google se había convertido en un escaparate: banners de series que no veo, filas que no puedo quitar y mis apps escondidas debajo de todo.

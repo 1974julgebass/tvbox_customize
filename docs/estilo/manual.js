@@ -4,14 +4,25 @@
 (function () {
   'use strict';
 
+  // Idioma: se recuerda el que se elige; la primera vez, quien no tiene el navegador en español va a la versión inglesa.
+  var guarda = function (k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) { return null; } };
+  document.querySelectorAll('.idioma a').forEach(function (a) {
+    a.addEventListener('click', function () { guarda('manual-idioma', a.dataset.idioma); });
+  });
+  if (document.documentElement.lang === 'es' && document.body.classList.contains('es-portada') && !guarda('manual-idioma')) {
+    var nav = (navigator.languages && navigator.languages[0]) || navigator.language || 'es';
+    var en = document.querySelector('.idioma a[data-idioma="en"]');
+    if (!/^es(-|$)/i.test(nav) && en) { location.replace(en.href); return; }
+  }
+
   // Copiar comandos (no depende de GSAP).
   document.querySelectorAll('.codigo .copiar').forEach(function (b) {
     b.addEventListener('click', function () {
       var texto = b.parentElement.querySelector('code').innerText.replace(/\n$/, '');
       var hecho = function () {
-        b.textContent = 'Copiado';
+        b.textContent = document.body.dataset.copiado || 'Copiado';
         b.classList.add('hecho');
-        setTimeout(function () { b.textContent = 'Copiar'; b.classList.remove('hecho'); }, 1600);
+        setTimeout(function () { b.textContent = document.body.dataset.copiar || 'Copiar'; b.classList.remove('hecho'); }, 1600);
       };
       if (navigator.clipboard) navigator.clipboard.writeText(texto).then(hecho, function () {});
     });

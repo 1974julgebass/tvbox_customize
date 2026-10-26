@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home for Android TV</title>
+<meta name="description" content="A home screen of your own for Android TV boxes, with no ads and nobody&#x27;s recommendations. I built it for the Xiaomi Mi Box 4 in our living room because Google&#x27;s">
+<link rel="alternate" hreflang="es" href="../index.html"><link rel="alternate" hreflang="en" href="index.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
+<link rel="stylesheet" href="../estilo/manual.css">
+</head>
+<body class="es-portada" data-copiado="Copied" data-copiar="Copy">
+<header class="cabecera" id="cabecera">
+  <a class="marca" href="index.html">Home <span>for Android TV</span></a>
+  <div class="cabecera-der">
+    <nav class="menu" aria-label="Manuals"><a href="manuals/01-installation.html">Installation</a><a href="manuals/02-setup.html">Setup</a><a href="manuals/03-usage.html">Usage</a></nav>
+    <nav class="idioma" aria-label="Language"><a href="../index.html" hreflang="es" lang="es" data-idioma="es">ES</a><a href="index.html" hreflang="en" lang="en" data-idioma="en" aria-current="true">EN</a></nav>
+  </div>
+</header>
+<main>
+  <section class="portada">
+    <h1 class="titular">Home for Android TV</h1>
+    <p class="entradilla">A home screen of your own for Android TV boxes, with no ads and nobody's recommendations. I built it for the Xiaomi Mi Box 4 in our living room because Google's had turned into a shop window: banners for shows I don't watch, rows I can't remove, and my own apps buried at the bottom.</p>
+    <figure class="figura figura-portada"><img src="../manuales/capturas/inicio.png" alt="Home screen" width="1920" height="1080" loading="lazy" decoding="async"><figcaption>Home screen</figcaption></figure>
+  </section>
+  <div class="cuerpo">
+    
+    <article class="texto">
+
+<p>What it does:</p>
+<ul>
+<li><strong>Your apps, in your order</strong>, and nothing else.</li>
+<li><strong>What's on now</strong> on your TV channels, with each channel's logo, and reminders for the show you don't want to miss.</li>
+<li><strong>Continue watching</strong>: the last thing you watched in each app, gathered in a single row.</li>
+<li><strong>The weather</strong> in your city, sunrise and sunset, and the phase of the moon.</li>
+<li><strong>A screensaver</strong> with the time, the weather and your channels.</li>
+<li><strong>Your phone as a remote</strong>, with nothing to install: scan a QR code on the TV and you're done.</li>
+<li><strong>Install apps</strong> from a USB stick or by sending them from your phone.</li>
+<li><strong>Sleep timer</strong> and automatic reminders when your team or your show is on.</li>
+<li><strong>A PC panel</strong> (optional) to see the TV screen, control it with the keyboard, and install or disable apps.</li>
+</ul>
+<p>The interface is in Spanish, and the TV guide covers Spanish channels.</p>
+
+<section class="bloque" aria-labelledby="manuals"><h2 id="manuals">Manuals</h2>
+<p>They're also available as a website, with the same design: <strong><a href="https://1974julgebass.github.io/tvbox_customize/en/" target="_blank" rel="noopener">1974julgebass.github.io/tvbox_customize/en</a></strong></p>
+<ol>
+<li><a href="manuals/01-installation.html">Installation</a>: get the box and the PC ready, install the app and grant its permissions.</li>
+<li><a href="manuals/02-setup.html">Setup</a>: your apps, the city, reminders, the phone and the screensaver.</li>
+<li><a href="manuals/03-usage.html">Usage</a>: day to day with the remote.</li>
+</ol>
+</section>
+<section class="bloque" aria-labelledby="download"><h2 id="download">Download</h2>
+<p>The ready-to-install APK is under <a href="https://github.com/1974julgebass/tvbox_customize/releases" target="_blank" rel="noopener">Releases</a>. If you'd rather build it yourself, the installation manual explains how.</p>
+</section>
+<section class="bloque" aria-labelledby="requirements"><h2 id="requirements">Requirements</h2>
+<ul>
+<li>A box or TV running Android TV 8 or later. Tested on a Xiaomi Mi Box 4 (Android TV 9).</li>
+<li>A PC for the installation. After that you don't need it: the box runs on its own.</li>
+</ul>
+<p>No root needed, and everything can be undone.</p>
+</section>
+<section class="bloque" aria-labelledby="what-s-in-each-folder"><h2 id="what-s-in-each-folder">What's in each folder</h2>
+<div class="tabla"><table>
+<thead>
+<tr>
+<th>Folder</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>launcher/</code></td>
+<td>The home screen interface, the screensaver and the phone remote (HTML, CSS and JavaScript). You can open it in a desktop browser with sample data: the arrow keys work as the remote.</td>
+</tr>
+<tr>
+<td><code>android/</code></td>
+<td>The Android app that wraps it: home screen, permissions, guide, reminders, screensaver and the phone remote's server.</td>
+</tr>
+<tr>
+<td><code>index.php</code>, <code>api/</code>, <code>includes/</code>, <code>css/</code>, <code>js/</code></td>
+<td>The optional PC panel (PHP 8 and ADB).</td>
+</tr>
+<tr>
+<td><code>docs/</code></td>
+<td>The manuals, in Markdown and HTML, in Spanish and English.</td>
+</tr>
+<tr>
+<td><code>herramientas/</code></td>
+<td>The script that builds the manuals' HTML pages.</td>
+</tr>
+</tbody>
+</table></div>
+</section>
+<section class="bloque" aria-labelledby="license"><h2 id="license">License</h2>
+<p><a href="https://github.com/1974julgebass/tvbox_customize/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a>. Use it, change it and share it however you like; just keep the license notice.</p>
+</section>
+<section class="bloque" aria-labelledby="credits"><h2 id="credits">Credits</h2>
+<ul>
+<li>TV guide and channel logos: <a href="https://github.com/davidmuma/EPG_dobleM" target="_blank" rel="noopener">EPG_dobleM</a>. The app downloads them from that repository; they aren't included here.</li>
+<li>Weather and city search: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>.</li>
+<li>QR code generator: <a href="https://github.com/kazuhikoarase/qrcode-generator" target="_blank" rel="noopener">qrcode-generator</a>, by Kazuhiko Arase (MIT).</li>
+<li>Moon calculations: based on <a href="https://github.com/mourner/suncalc" target="_blank" rel="noopener">SunCalc</a>, by Vladimir Agafonkin (BSD-2).</li>
+<li>The app's ADB client: <a href="https://github.com/mobile-dev-inc/dadb" target="_blank" rel="noopener">dadb</a>, by mobile.dev (Apache 2.0).</li>
+<li>Typeface: <a href="https://github.com/ateliertriay/bricolage" target="_blank" rel="noopener">Bricolage Grotesque</a> (SIL Open Font License 1.1).</li>
+</ul></section>
+    </article>
+  </div>
+  <nav class="paso" aria-label="Next manual"><span></span><a class="paso-sig" href="manuals/01-installation.html"><small>Next</small>Installation</a></nav>
+</main>
+<footer class="pie"><p>Home for Android TV · <a href="index.html">Home</a> · <a href="https://github.com/1974julgebass/tvbox_customize" target="_blank" rel="noopener">GitHub</a></p></footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
+<script src="../estilo/manual.js"></script>
+</body>
+</html>

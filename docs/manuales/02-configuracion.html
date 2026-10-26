@@ -5,15 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Configuración · Inicio para Android TV</title>
 <meta name="description" content="Con la app instalada y puesta como pantalla de inicio (lo cuenta el manual de instalación), toca dejarla a tu gusto. Casi todo se hace desde la propia tele con ">
+<link rel="alternate" hreflang="es" href="02-configuracion.html"><link rel="alternate" hreflang="en" href="../en/manuals/02-setup.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap">
 <link rel="stylesheet" href="../estilo/manual.css">
 </head>
-<body class="es-manual">
+<body class="es-manual" data-copiado="Copiado" data-copiar="Copiar">
 <header class="cabecera" id="cabecera">
   <a class="marca" href="../index.html">Inicio <span>para Android TV</span></a>
-  <nav class="menu" aria-label="Manuales"><a href="../manuales/01-instalacion.html">Instalación</a><a href="../manuales/02-configuracion.html" aria-current="page">Configuración</a><a href="../manuales/03-uso.html">Uso</a></nav>
+  <div class="cabecera-der">
+    <nav class="menu" aria-label="Manuales"><a href="01-instalacion.html">Instalación</a><a href="02-configuracion.html" aria-current="page">Configuración</a><a href="03-uso.html">Uso</a></nav>
+    <nav class="idioma" aria-label="Idioma"><a href="02-configuracion.html" hreflang="es" lang="es" data-idioma="es" aria-current="true">ES</a><a href="../en/manuals/02-setup.html" hreflang="en" lang="en" data-idioma="en">EN</a></nav>
+  </div>
 </header>
 <main>
   <section class="portada">
@@ -130,9 +134,9 @@ adb shell pm disable-user --user 0 com.google.android.tv.bugreportsender
 <p>No toques los servicios de Google (<code>com.google.android.gms</code>, <code>com.google.android.gsf</code>, <code>com.android.vending</code>), ni <code>com.google.android.tungsten.setupwraith</code> (puede borrar la wifi guardada), ni nada que tenga que ver con el mando o con Chromecast. Si dudas de un paquete, déjalo como está.</p></section>
     </article>
   </div>
-  <nav class="paso" aria-label="Siguiente manual"><a class="paso-ant" href="../manuales/01-instalacion.html"><small>Anterior</small>Instalación</a><a class="paso-sig" href="../manuales/03-uso.html"><small>Siguiente</small>Uso</a></nav>
+  <nav class="paso" aria-label="Siguiente manual"><a class="paso-ant" href="01-instalacion.html"><small>Anterior</small>Instalación</a><a class="paso-sig" href="03-uso.html"><small>Siguiente</small>Uso</a></nav>
 </main>
-<footer class="pie"><p>Inicio para Android TV · <a href="../index.html">Portada</a></p></footer>
+<footer class="pie"><p>Inicio para Android TV · <a href="../index.html">Portada</a> · <a href="https://github.com/1974julgebass/tvbox_customize" target="_blank" rel="noopener">GitHub</a></p></footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/SplitText.min.js"></script>
